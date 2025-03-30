@@ -86,7 +86,7 @@ async function getOpinionPollingSection(sectionName) {
             headings: ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
                 "MarginOfError", "SampleSize", "Lead"]
         });
-        const data = JSON.stringify(processTable(table), null, null);
+        const data = "{\"data\":" + JSON.stringify(processTable(table), null, null) + "}";
         const fileName = sectionName.toLowerCase().replace(" ", "_") + '.json';
         fs.writeFile(outputDir + fileName, data, err => {
             if (err) {
