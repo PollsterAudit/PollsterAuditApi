@@ -1,0 +1,33 @@
+name: Update table data (hourly)
+
+on:
+  schedule:
+    - cron: "0 * * * *" # Every hour
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    permissions:
+      contents: write
+    name: Update API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run API update
+        run: npm start
+      - name: Push API changes
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: api
+          FOLDER: output
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Update API: ({sha}) {msg}"
