@@ -36,3 +36,4 @@ jobs:
           FOLDER: output
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MESSAGE: "Update API: ({sha}) {msg}"
+          SKIP_EMPTY_COMMITS: true
