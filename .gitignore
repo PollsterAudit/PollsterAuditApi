@@ -137,3 +137,6 @@ dist
 
 # Webstorm
 .idea/
+
+# Pollster Audit
+output/

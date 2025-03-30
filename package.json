@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "api": "node src/index.js & node src/api.js"
   },
   "keywords": [],
   "author": "FX Morin",
