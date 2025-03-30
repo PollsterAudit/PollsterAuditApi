@@ -1,6 +1,9 @@
 name: Update table data (hourly)
 
 on:
+  push:
+    branches:
+      - master
   schedule:
     - cron: "0 * * * *" # Every hour
   workflow_dispatch:
