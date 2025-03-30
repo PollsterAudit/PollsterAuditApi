@@ -10,3 +10,9 @@ fs.writeFile("./output/CNAME", "api.pollsteraudit.ca", err => {
         console.error(err);
     }
 });
+// Add empty index.html
+fs.writeFile("./output/index.html", "", err => {
+    if (err) {
+        console.error(err);
+    }
+});
