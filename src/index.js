@@ -3,6 +3,7 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('node:fs');
 
+const apiVersion = 1;
 const outputDir = "./output/";
 
 async function getTableFromWikipediaPage(url, headerName, options) {
@@ -88,7 +89,11 @@ async function getOpinionPollingSection(sectionName) {
         });
         const data = "{\"data\":" + JSON.stringify(processTable(table), null, null) + "}";
         const fileName = sectionName.toLowerCase().replace(" ", "_") + '.json';
-        fs.writeFile(outputDir + fileName, data, err => {
+        const directory = outputDir + "v" + apiVersion + "/2025/";
+        if (!fs.existsSync(directory)) {
+            fs.mkdirSync(directory, { recursive: true });
+        }
+        fs.writeFile(directory + fileName, data, err => {
             if (err) {
                 console.error(err);
             }
@@ -99,9 +104,6 @@ async function getOpinionPollingSection(sectionName) {
 }
 
 (async () => {
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
-    }
     await getOpinionPollingSection('Campaign period');
     await getOpinionPollingSection('Pre-campaign period');
 })();
