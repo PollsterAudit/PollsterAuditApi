@@ -5,6 +5,7 @@ const fs = require('node:fs');
 
 const apiVersion = 1;
 const outputDir = "./output/";
+const baseUrl = "https://api.pollsteraudit.ca/";
 
 async function getTableFromWikipediaPage(url, headerName, options) {
     const data = await axios({
@@ -78,20 +79,32 @@ function processTable(table) {
 
 // TODO: Rewrite to allow us to collect all election data, did this quickly to release the site.
 //  We should be reading any configurable data from a config file
-async function getOpinionPollingSection(sectionName) {
-    const url = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election';
+async function getOpinionPollingSection(page, path, sectionName, index) {
     try {
+        let from = Number.MAX_SAFE_INTEGER;
+        let to = Number.MIN_SAFE_INTEGER;
         const headings = ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
             "MarginOfError", "SampleSize", "Lead"];
-        const table = await getTableFromWikipediaPage(url, sectionName, {
+        const table = await getTableFromWikipediaPage(page, sectionName, {
             forceIndexAsNumber: true,
             ignoreColumns: [2, 12],
             headings: headings
         });
+        const processedTable = processTable(table);
+        processedTable.forEach((element) => {
+            let time = element[1];
+            if (time < from) {
+                from = time;
+            }
+            if (time > to) {
+                to = time;
+            }
+        })
         const data = "{\"headings\": " + JSON.stringify(headings) +
-            ",\"data\":" + JSON.stringify(processTable(table), null, null) + " }";
-        const fileName = sectionName.toLowerCase().replace(" ", "_") + '.json';
-        const directory = outputDir + "v" + apiVersion + "/2025/";
+            ",\"data\":" + JSON.stringify(processedTable, null, null) + " }";
+        const id = sectionName.toLowerCase().replace(" ", "_");
+        const fileName = id + '.json';
+        const directory = outputDir + "v" + apiVersion + path;
         if (!fs.existsSync(directory)) {
             fs.mkdirSync(directory, { recursive: true });
         }
@@ -100,12 +113,35 @@ async function getOpinionPollingSection(sectionName) {
                 console.error(err);
             }
         });
+        index[id] = {"name": sectionName, "url": baseUrl + "v" + apiVersion + path + fileName, "range": [from, to]};
     } catch (error) {
         console.error('Error fetching tables:', error);
     }
 }
 
+async function writeIndex(index) {
+    const fileName = 'index.json';
+    const directory = outputDir + "v" + apiVersion + "/";
+    const data = JSON.stringify(index);
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+    fs.writeFile(directory + fileName, data, err => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
 (async () => {
-    await getOpinionPollingSection('Campaign period');
-    await getOpinionPollingSection('Pre-campaign period');
+    let index = {};
+
+    // 2025
+    const opinionPolling2025 = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election';
+    const path2025 = "/2025/";
+    await getOpinionPollingSection(opinionPolling2025, path2025, 'Campaign period', index);
+    await getOpinionPollingSection(opinionPolling2025, path2025, 'Pre-campaign period', index);
+
+    // Index
+    await writeIndex(index);
 })();
