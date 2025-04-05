@@ -81,13 +81,15 @@ function processTable(table) {
 async function getOpinionPollingSection(sectionName) {
     const url = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election';
     try {
+        const headings = ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
+            "MarginOfError", "SampleSize", "Lead"];
         const table = await getTableFromWikipediaPage(url, sectionName, {
             forceIndexAsNumber: true,
             ignoreColumns: [2, 12],
-            headings: ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
-                "MarginOfError", "SampleSize", "Lead"]
+            headings: headings
         });
-        const data = "{\"data\":" + JSON.stringify(processTable(table), null, null) + "}";
+        const data = "{\"headings\": " + JSON.stringify(headings) +
+            ",\"data\":" + JSON.stringify(processTable(table), null, null) + " }";
         const fileName = sectionName.toLowerCase().replace(" ", "_") + '.json';
         const directory = outputDir + "v" + apiVersion + "/2025/";
         if (!fs.existsSync(directory)) {
