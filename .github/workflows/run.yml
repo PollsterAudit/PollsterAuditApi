@@ -35,5 +35,5 @@ jobs:
           BRANCH: api
           FOLDER: output
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MESSAGE: "Update API: ({sha}) {msg}"
+          MESSAGE: "Update API: last api changes ({sha})"
           SKIP_EMPTY_COMMITS: true
