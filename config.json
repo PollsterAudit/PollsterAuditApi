@@ -1,0 +1,430 @@
+{
+  "sources": {
+    "wikipedia":  [
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election",
+        "year": 2025,
+        "sectionTables": ["Campaign period", "Pre-campaign period"],
+        "options": {
+          "ignoreColumns": [2, 12],
+          "headings": ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
+            "MarginOfError", "SampleSize", "Lead"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_Canadian_federal_election",
+        "year": 2021,
+        "sectionTables": ["Campaign period", "Pre-campaign period"],
+        "options": {
+          "ignoreColumns": [2, 12],
+          "headings": ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "GPC", "PPC", "Others",
+            "MarginOfError", "SampleSize", "Lead"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2019_Canadian_federal_election",
+        "year": 2019,
+        "sectionTables": ["Campaign period", "Pre-campaign period"],
+        "options": {
+          "ignoreColumns": [2, 12],
+          "headings": ["PollingFirm", "Date", "LPC", "CPC", "NDP", "BQ", "GPC", "PPC", "Others",
+            "MarginOfError", "SampleSize", "Lead"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2015_Canadian_federal_election",
+        "year": 2015,
+        "sectionTables": ["Campaign period", "Pre-campaign period"],
+        "options": {
+          "ignoreColumns": [2, 11],
+          "headings": ["PollingFirm", "Date", "CPC", "NDP", "LPC", "BQ", "GPC", "Others",
+            "MarginOfError", "SampleSize", "Lead"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2011_Canadian_federal_election",
+        "year": 2011,
+        "chunks": [
+          {
+            "sectionTables": ["Campaign period"],
+            "options": {
+              "ignoreColumns": [2, 9],
+              "headings": ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "GPC", "Others", "MarginOfError"]
+            }
+          },
+          {
+            "sectionTables": ["Pre-campaign period"],
+            "options": {
+              "ignoreColumns": [2],
+              "headings": ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "GPC", "MarginOfError"]
+            }
+          }
+        ]
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2008_Canadian_federal_election",
+        "year": 2008,
+        "sectionTables": ["Polls"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "GPC"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "September 8, 2008"
+          },
+          "Pre-campaign period": {
+            "to": "September 7, 2008"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2006_Canadian_federal_election",
+        "year": 2006,
+        "sectionTables": ["Poll results"],
+        "options": {
+          "ignoreColumns": [2, 10],
+          "headings": ["PollingFirm", "Date", "LPC", "CPC", "NDP", "BQ", "GPC", "MarginOfError", "SampleSize", "Lead"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "November 29, 2005"
+          },
+          "Pre-campaign period": {
+            "to": "November 28, 2005"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2004_Canadian_federal_election",
+        "year": 2004,
+        "chunks": [
+          {
+            "sectionTables": {
+              "National polls": "Campaign period"
+            },
+            "options": {
+              "headings": ["Date", "LPC", "CPC", "NDP", "BQ", "GPC", "PollingFirm", "SampleSize","MarginOfError"]
+            }
+          },
+          {
+            "sectionTables": {
+              "During the 37th Parliament of Canada": "Pre-campaign period"
+            },
+            "options": {
+              "headings": ["Date", "LPC", "CPC", "NDP", "BQ", "GPC", "Others", "PollingFirm",
+                "SampleSize", "MarginOfError"]
+            }
+          },
+          {
+            "sectionTables": {
+              "Before the creation of the Conservative Party": "Pre-Conservative"
+            },
+            "options": {
+              "headings": ["Date", "LPC", "NDP", "BQ", "GPC", "CA", "PC", "Others", "PollingFirm",
+                "SampleSize", "MarginOfError"]
+            }
+          }
+        ]
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2000_Canadian_federal_election",
+        "year": 2000,
+        "sectionTables": {
+          "Campaign period": "Campaign period",
+          "During the 36th Parliament of Canada": "Pre-campaign period"
+        },
+        "options": {
+          "headings": ["Date", "LPC", "CA", "PC", "BQ", "NDP", "GPC", "Others", "PollingFirm",
+            "SampleSize", "MarginOfError"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1997_Canadian_federal_election",
+        "year": 1997,
+        "sectionTables": {
+          "Campaign period": "Campaign period",
+          "During the 35th Parliament of Canada": "Pre-campaign period"
+        },
+        "options": {
+          "headings": ["Date", "LPC", "Reform", "PC", "NDP", "BQ", "Others", "PollingFirm",
+            "SampleSize", "MarginOfError"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1993_Canadian_federal_election",
+        "year": 1993,
+        "sectionTables": {
+          "Campaign period": "Campaign period",
+          "During the 34th Parliament of Canada": "Pre-campaign period"
+        },
+        "options": {
+          "headings": ["Date", "LPC", "Reform", "PC", "BQ", "NDP", "Others", "PollingFirm",
+            "SampleSize", "MarginOfError"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1988_Canadian_federal_election",
+        "year": 1988,
+        "sectionTables": {
+          "Campaign period": "Campaign period",
+          "During the 33rd Parliament of Canada": "Pre-campaign period"
+        },
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1984_Canadian_federal_election",
+        "year": 1984,
+        "sectionTables": {
+          "Campaign period": "Campaign period",
+          "During the 32nd Parliament of Canada": "Pre-campaign period"
+        },
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/1980_Canadian_federal_election",
+        "year": 1980,
+        "sectionTables": ["Opinion polling"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "SC", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "December 15, 1979"
+          },
+          "Pre-campaign period": {
+            "to": "December 14, 1979"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1979_Canadian_federal_election",
+        "year": 1979,
+        "sectionTables": ["During the 30th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2, 8],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "NDP", "SC", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "March 27, 1979"
+          },
+          "Pre-campaign period": {
+            "to": "March 26, 1979"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1974_Canadian_federal_election",
+        "year": 1974,
+        "sectionTables": ["During the 29th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "May 10, 1974"
+          },
+          "Pre-campaign period": {
+            "to": "May 9, 1974"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1972_Canadian_federal_election",
+        "year": 1972,
+        "sectionTables": ["During the 28th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "September 2, 1972"
+          },
+          "Pre-campaign period": {
+            "to": "September 1, 1972"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1968_Canadian_federal_election",
+        "year": 1968,
+        "sectionTables": ["During the 27th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "April 24, 1968"
+          },
+          "Pre-campaign period": {
+            "to": "April 23, 1968"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1965_Canadian_federal_election",
+        "year": 1965,
+        "sectionTables": ["During the 26th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "September 9, 1965"
+          },
+          "Pre-campaign period": {
+            "to": "September 8, 1965"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1963_Canadian_federal_election",
+        "year": 1963,
+        "sectionTables": ["During the 25th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "February 6, 1963"
+          },
+          "Pre-campaign period": {
+            "to": "February 5, 1963"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1962_Canadian_federal_election",
+        "year": 1962,
+        "sectionTables": ["During the 24th Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "NDP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "April 20, 1962"
+          },
+          "Pre-campaign period": {
+            "to": "April 19, 1962"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/1958_Canadian_federal_election",
+        "year": 1958,
+        "sectionTables": ["During the 23rd Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2, 8],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "CCF", "SC", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "February 2, 1958"
+          },
+          "Pre-campaign period": {
+            "to": "February 1, 1958"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1957_Canadian_federal_election",
+        "year": 1957,
+        "sectionTables": ["During the 22rd Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "PC", "LPC", "CCF", "SC", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "April 13, 1957"
+          },
+          "Pre-campaign period": {
+            "to": "April 12, 1957"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1953_Canadian_federal_election",
+        "year": 1953,
+        "sectionTables": ["During the 22nd Parliament of Canada"],
+        "options": {
+          "ignoreColumns": [2, 8],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "CCF", "SC", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "June 14, 1953"
+          },
+          "Pre-campaign period": {
+            "to": "June 13, 1953"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/1949_Canadian_federal_election",
+        "year": 1949,
+        "sectionTables": ["Opinion polling"],
+        "options": {
+          "ignoreColumns": [2, 9],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "CCF", "SC", "BP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "May 1, 1949"
+          },
+          "Pre-campaign period": {
+            "to": "April 30, 1949"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/1945_Canadian_federal_election",
+        "year": 1945,
+        "sectionTables": ["Opinion polling"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "CCF", "SC", "BP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "April 17, 1945"
+          },
+          "Pre-campaign period": {
+            "to": "April 16, 1945"
+          }
+        }
+      },
+      {
+        "url": "https://en.wikipedia.org/wiki/1945_Canadian_federal_election",
+        "year": 1945,
+        "sectionTables": ["Opinion polling"],
+        "options": {
+          "ignoreColumns": [2],
+          "headings": ["PollingFirm", "Date", "LPC", "PC", "CCF", "SC", "BP", "Others", "MarginOfError", "SampleSize"]
+        },
+        "manualTimes": {
+          "Campaign period": {
+            "from": "April 17, 1945"
+          },
+          "Pre-campaign period": {
+            "to": "April 16, 1945"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -3,16 +3,23 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('node:fs');
 
+const config = require('../config.json');
+
 const apiVersion = 1;
 const outputDir = "./output/";
 const baseUrl = "https://api.pollsteraudit.ca/";
 
-async function getTableFromWikipediaPage(url, headerName, options) {
-    const data = await axios({
+let currentPageSection = "";
+
+async function getWikipediaPage(url) {
+    return axios({
         method: "GET",
         url: url
     });
-    const $ = cheerio.load(data.data);
+}
+
+async function getTableFromWikipediaPage(wikipediaPage, headerName, options) {
+    const $ = cheerio.load(wikipediaPage.data);
 
     // Find the header element that contains the name
     const checkHeaderName = headerName.trim().toUpperCase();
@@ -48,50 +55,72 @@ function parseCleanFloat(item) {
     return parseFloat(item.replace(regex, `$1$2$3`));
 }
 
-function processTable(table) {
+function cleanPollingFirmName(item) {
+    if (item == null) {
+        return null;
+    }
+    const regex = /(.*?)(?:\[[a-zA-Z0-9]{0,2}\])?/gm;
+    return item.replace(regex, `$1`);
+}
+
+function processTable(table, headings) {
     const newTable = [];
     let skipped = 0;
     for (let i = 0; i < table.length; i++) {
         const row = table[i];
-        const pollingFirm = row["0"];
-        // TODO: temp fix for wikipedia including the election as the final row v
-        if (pollingFirm === "" || pollingFirm.includes("election")) {
+        // TODO: -1 to account for tables that didn't fully populate all the data. Look at Margin of Error in 2011
+        //  https://en.wikipedia.org/wiki/Opinion_polling_for_the_2011_Canadian_federal_election#Pre-campaign%20period
+        if (Object.keys(row).length < headings.length - 1) {
             skipped++;
             continue; // Invalid table data (usually an info row)
         }
-        newTable[i - skipped] = [
-            pollingFirm,
-            new Date(row["1"]).getTime(),
-            parseCleanFloat(row["3"]),
-            parseCleanFloat(row["4"]),
-            parseCleanFloat(row["5"]),
-            parseCleanFloat(row["6"]),
-            parseCleanFloat(row["7"]),
-            parseCleanFloat(row["8"]),
-            parseCleanFloat(row["9"]),
-            parseCleanFloat(row["10"]),
-            parseCleanFloat(row["11"]),
-            parseCleanFloat(row["13"])
-        ];
+        const pollingFirm = row["" + headings.indexOf("PollingFirm")];
+        if (pollingFirm == null) {
+            // TODO: Log, and send a webhook so we can investigate
+            skipped++;
+            console.warn("Polling Firm is null - " + headings.indexOf("PollingFirm") + " - " + JSON.stringify(row));
+            continue;
+        }
+
+        // TODO: temp fix for wikipedia including the election as the final row v
+        if (pollingFirm === "" || pollingFirm.toLowerCase().includes("election")) {
+            skipped++;
+            continue; // Invalid table data (usually an info row)
+        }
+        let item = [];
+        for (let j = 0; j < headings.length; j++) {
+            const heading = headings[j];
+            if (heading === "PollingFirm") {
+                item[j] = cleanPollingFirmName(pollingFirm);
+            } else if (heading === "Date") {
+                const date = row["" + j];
+                if (date === "") {
+                    skipped++;
+                    continue; // Invalid table data (usually voting results (E.x. 1988))
+                }
+                item[j] = new Date(row["" + j]).getTime();
+            } else {
+                item[j] = parseCleanFloat(row["" + j]);
+            }
+        }
+        newTable[i - skipped] = item;
     }
     return newTable;
 }
 
-// TODO: Rewrite to allow us to collect all election data, did this quickly to release the site.
-//  We should be reading any configurable data from a config file
-async function getOpinionPollingSection(page, path, sectionName, index) {
+async function getWikipediaSection(page, year, sectionId, sectionName, options, manualTimes, index) {
     try {
+        if (!("forceIndexAsNumber" in options)) {
+            options["forceIndexAsNumber"] = true;
+        }
+
         let from = Number.MAX_SAFE_INTEGER;
         let to = Number.MIN_SAFE_INTEGER;
-        const headings = ["PollingFirm", "Date", "CPC", "LPC", "NDP", "BQ", "PPC", "GPC", "Others",
-            "MarginOfError", "SampleSize", "Lead"];
-        const table = await getTableFromWikipediaPage(page, sectionName, {
-            forceIndexAsNumber: true,
-            ignoreColumns: [2, 12],
-            headings: headings
-        });
-        const processedTable = processTable(table);
-        processedTable.forEach((element) => {
+        let headings = options["headings"];
+        currentPageSection = year + "_" + sectionName;
+        const table = await getTableFromWikipediaPage(page, sectionId, options);
+        const processedTable = processTable(table, headings);
+        processedTable.forEach(element => {
             let time = element[1];
             if (time < from) {
                 from = time;
@@ -99,21 +128,56 @@ async function getOpinionPollingSection(page, path, sectionName, index) {
             if (time > to) {
                 to = time;
             }
-        })
-        const data = "{\"headings\": " + JSON.stringify(headings) +
-            ",\"data\":" + JSON.stringify(processedTable, null, null) + " }";
-        const id = sectionName.toLowerCase().replace(" ", "_");
-        const fileName = id + '.json';
-        const directory = outputDir + "v" + apiVersion + path;
-        if (!fs.existsSync(directory)) {
-            fs.mkdirSync(directory, { recursive: true });
-        }
-        fs.writeFile(directory + fileName, data, err => {
-            if (err) {
-                console.error(err);
-            }
         });
-        index[id] = {"name": sectionName, "url": baseUrl + "v" + apiVersion + path + fileName, "range": [from, to]};
+
+        const processedTables = {};
+        if (manualTimes) {
+            for (let manualName in manualTimes) {
+                const times = manualTimes[manualName];
+                let timesFrom = Number.MIN_SAFE_INTEGER;
+                let timesTo = Number.MAX_SAFE_INTEGER;
+                if (times["from"]) {
+                    timesFrom = new Date(times["from"]).getTime();
+                }
+                if (times["to"]) {
+                    timesTo = new Date(times["to"]).getTime();
+                }
+                const manualTable = [];
+                for (const item of processedTable) {
+                    if (item[1] <= timesTo && item[1] >= timesFrom) {
+                        manualTable.push(item);
+                    }
+                }
+                processedTables[manualName] = manualTable;
+            }
+        } else {
+            processedTables[sectionName] = processedTable;
+        }
+
+        for (let tableName in processedTables) {
+            const dataTable = processedTables[tableName];
+            const data = "{\"headings\": " + JSON.stringify(headings) +
+                ",\"data\":" + JSON.stringify(dataTable, null, null) + " }";
+            const id = tableName.toLowerCase().replace(" ", "_");
+            const fileName = id + '.json';
+            const directory = outputDir + "v" + apiVersion + "/" + year + "/";
+            if (!fs.existsSync(directory)) {
+                fs.mkdirSync(directory, {recursive: true});
+            }
+            fs.writeFile(directory + fileName, data, err => {
+                if (err) {
+                    console.error(err);
+                }
+            });
+            if (!index[year]) {
+                index[year] = {};
+            }
+            index[year][id] = {
+                "name": tableName,
+                "url": baseUrl + "v" + apiVersion + "/" + year + "/" + fileName,
+                "range": [from, to]
+            };
+        }
     } catch (error) {
         console.error('Error fetching tables:', error);
     }
@@ -122,6 +186,23 @@ async function getOpinionPollingSection(page, path, sectionName, index) {
 async function writeIndex(index) {
     const fileName = 'index.json';
     const directory = outputDir + "v" + apiVersion + "/";
+
+    for (let year in index) {
+        let yearElement = index[year];
+        let from = Number.MAX_SAFE_INTEGER;
+        let to = Number.MIN_SAFE_INTEGER;
+        for (let period in yearElement) {
+            let periodElement = yearElement[period];
+            let range = periodElement["range"];
+            if (range[0] < from) {
+                from = range[0];
+            }
+            if (range[1] > to) {
+                to = range[1];
+            }
+        }
+        yearElement["range"] = [from, to];
+    }
     const data = JSON.stringify(index);
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
@@ -133,14 +214,43 @@ async function writeIndex(index) {
     });
 }
 
+async function processWikipediaSource(page, year, source, chunkSource, index) {
+    const sectionTables = chunkSource != null && "sectionTables" in chunkSource ?
+        chunkSource["sectionTables"] : source["sectionTables"];
+    const options = chunkSource != null && "options" in chunkSource ?
+        chunkSource["options"] : source["options"];
+    const manualTimes = chunkSource != null &&  "manualTimes" in chunkSource ?
+        chunkSource["manualTimes"] : source["manualTimes"];
+    // If section table is an object, it means we should rename the sections
+    if (!Array.isArray(sectionTables)) {
+        for (let sectionId in sectionTables) {
+            await getWikipediaSection(page, year, sectionId, sectionTables[sectionId], options, manualTimes, index);
+        }
+    } else {
+        for (const section of sectionTables) {
+            await getWikipediaSection(page, year, section, section, options, manualTimes, index);
+        }
+    }
+}
+
 (async () => {
+    const sources = config["sources"];
     let index = {};
 
-    // 2025
-    const opinionPolling2025 = 'https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election';
-    const path2025 = "/2025/";
-    await getOpinionPollingSection(opinionPolling2025, path2025, 'Campaign period', index);
-    await getOpinionPollingSection(opinionPolling2025, path2025, 'Pre-campaign period', index);
+    // Wikipedia
+    const wikipedia = sources["wikipedia"];
+    for (const source of wikipedia) {
+        const url = source["url"];
+        const year = source["year"];
+        const page = await getWikipediaPage(url);
+        if ("chunks" in source) {
+            for (const chunk of source["chunks"]) {
+                await processWikipediaSource(page, year, source, chunk, index);
+            }
+        } else {
+            await processWikipediaSource(page, year, source, null, index);
+        }
+    }
 
     // Index
     await writeIndex(index);
