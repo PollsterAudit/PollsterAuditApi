@@ -120,8 +120,9 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
         currentPageSection = year + "_" + sectionName;
         const table = await getTableFromWikipediaPage(page, sectionId, options);
         const processedTable = processTable(table, headings);
+        const dateIndex = headings.indexOf("Date");
         processedTable.forEach(element => {
-            let time = element[1];
+            let time = element[dateIndex];
             if (time < from) {
                 from = time;
             }
@@ -144,7 +145,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
                 }
                 const manualTable = [];
                 for (const item of processedTable) {
-                    if (item[1] <= timesTo && item[1] >= timesFrom) {
+                    if (item[dateIndex] <= timesTo && item[dateIndex] >= timesFrom) {
                         manualTable.push(item);
                     }
                 }
