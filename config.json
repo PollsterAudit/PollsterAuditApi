@@ -787,23 +787,6 @@
             "to": "April 16, 1945"
           }
         }
-      },
-      {
-        "url": "https://en.wikipedia.org/wiki/1945_Canadian_federal_election",
-        "year": 1945,
-        "sectionTables": ["Opinion polling"],
-        "options": {
-          "ignoreColumns": [2],
-          "headings": ["PollingFirm", "Date", "LPC", "PC", "CCF", "SC", "BP", "Others", "MarginOfError", "SampleSize"]
-        },
-        "manualTimes": {
-          "Campaign period": {
-            "from": "April 17, 1945"
-          },
-          "Pre-campaign period": {
-            "to": "April 16, 1945"
-          }
-        }
       }
     ]
   }
