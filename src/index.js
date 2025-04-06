@@ -203,7 +203,23 @@ async function writeIndex(index) {
         }
         yearElement["range"] = [from, to];
     }
+
     const data = JSON.stringify(index);
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+    fs.writeFile(directory + fileName, data, err => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
+async function writeFromConfig(key) {
+    const fileName = key + '.json';
+    const directory = outputDir + "v" + apiVersion + "/";
+
+    const data = JSON.stringify(config[key]);
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
     }
@@ -254,4 +270,10 @@ async function processWikipediaSource(page, year, source, chunkSource, index) {
 
     // Index
     await writeIndex(index);
+
+    // Parties
+    await writeFromConfig("parties");
+
+    // Pollsters
+    await writeFromConfig("pollsters");
 })();
