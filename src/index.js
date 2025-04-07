@@ -9,8 +9,6 @@ const apiVersion = 1;
 const outputDir = "./output/";
 const baseUrl = "https://api.pollsteraudit.ca/";
 
-let currentPageSection = "";
-
 async function getWikipediaPage(url) {
     return axios({
         method: "GET",
@@ -66,7 +64,7 @@ function cleanPollingFirmName(item) {
 function processTable(table, headings) {
     const newTable = [];
     let skipped = 0;
-    for (let i = 0; i < table.length; i++) {
+    main : for (let i = 0; i < table.length; i++) {
         const row = table[i];
         // TODO: -1 to account for tables that didn't fully populate all the data. Look at Margin of Error in 2011
         //  https://en.wikipedia.org/wiki/Opinion_polling_for_the_2011_Canadian_federal_election#Pre-campaign%20period
@@ -96,7 +94,7 @@ function processTable(table, headings) {
                 const date = row["" + j];
                 if (date === "") {
                     skipped++;
-                    continue; // Invalid table data (usually voting results (E.x. 1988))
+                    continue main; // Invalid table data (usually voting results (E.x. 1988))
                 }
                 item[j] = new Date(row["" + j]).getTime();
             } else {
@@ -117,7 +115,6 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
         let from = Number.MAX_SAFE_INTEGER;
         let to = Number.MIN_SAFE_INTEGER;
         let headings = options["headings"];
-        currentPageSection = year + "_" + sectionName;
         const table = await getTableFromWikipediaPage(page, sectionId, options);
         const processedTable = processTable(table, headings);
         const dateIndex = headings.indexOf("Date");
