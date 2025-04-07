@@ -258,30 +258,34 @@ async function processWikipediaSource(page, year, source, chunkSource, index) {
 }
 
 (async () => {
-    const sources = config["sources"];
-    let index = {};
+    try {
+        const sources = config["sources"];
+        let index = {};
 
-    // Wikipedia
-    const wikipedia = sources["wikipedia"];
-    for (const source of wikipedia) {
-        const url = source["url"];
-        const year = source["year"];
-        const page = await getWikipediaPage(url);
-        if ("chunks" in source) {
-            for (const chunk of source["chunks"]) {
-                await processWikipediaSource(page, year, source, chunk, index);
+        // Wikipedia
+        const wikipedia = sources["wikipedia"];
+        for (const source of wikipedia) {
+            const url = source["url"];
+            const year = source["year"];
+            const page = await getWikipediaPage(url);
+            if ("chunks" in source) {
+                for (const chunk of source["chunks"]) {
+                    await processWikipediaSource(page, year, source, chunk, index);
+                }
+            } else {
+                await processWikipediaSource(page, year, source, null, index);
             }
-        } else {
-            await processWikipediaSource(page, year, source, null, index);
         }
+
+        // Index
+        await writeIndex(index);
+
+        // Parties
+        await writeFromConfig("parties");
+
+        // Pollsters
+        await writeFromConfig("pollsters");
+    } catch (error) {
+        console.error('An error has occurred:', error);
     }
-
-    // Index
-    await writeIndex(index);
-
-    // Parties
-    await writeFromConfig("parties");
-
-    // Pollsters
-    await writeFromConfig("pollsters");
 })();
