@@ -61,7 +61,7 @@ function cleanPollingFirmName(item) {
     return item.replace(regex, `$1`);
 }
 
-function processTable(table, headings) {
+function processTable(table, headings, ignoreColumns) {
     const newTable = [];
     let skipped = 0;
     main : for (let i = 0; i < table.length; i++) {
@@ -86,19 +86,24 @@ function processTable(table, headings) {
             continue; // Invalid table data (usually an info row)
         }
         let item = [];
+        let innerSkipped = 0;
         for (let j = 0; j < headings.length; j++) {
+            while(ignoreColumns.includes(j + innerSkipped)) {
+                innerSkipped++;
+            }
+            const x = j + innerSkipped;
             const heading = headings[j];
             if (heading === "PollingFirm") {
                 item[j] = cleanPollingFirmName(pollingFirm);
             } else if (heading === "Date") {
-                const date = row["" + j];
+                const date = row["" + x];
                 if (date === "") {
                     skipped++;
                     continue main; // Invalid table data (usually voting results (E.x. 1988))
                 }
-                item[j] = new Date(row["" + j]).getTime();
+                item[j] = new Date(date).getTime();
             } else {
-                item[j] = parseCleanFloat(row["" + j]);
+                item[j] = parseCleanFloat(row["" + x]);
             }
         }
         newTable[i - skipped] = item;
@@ -116,7 +121,12 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
         let to = Number.MIN_SAFE_INTEGER;
         let headings = options["headings"];
         const table = await getTableFromWikipediaPage(page, sectionId, options);
-        const processedTable = processTable(table, headings);
+        const processedTable = processTable(
+            table,
+            headings,
+            ("ignoreColumns" in options ? options.ignoreColumns : [])
+        );
+
         const dateIndex = headings.indexOf("Date");
         processedTable.forEach(element => {
             let time = element[dateIndex];
