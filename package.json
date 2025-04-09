@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "api": "node src/index.js & node src/api.js"
+    "api": "node src/index.js & node src/api.js",
+    "validate": "node src/validateConfig.js"
   },
   "type": "commonjs",
   "keywords": [],
@@ -12,6 +13,8 @@
   "license": "MIT",
   "description": "An API to get pollster data to audit pollsters",
   "dependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
     "axios": "^1.8.4",
     "cheerio": "^1.0.0",
     "tabletojson": "^4.1.5"

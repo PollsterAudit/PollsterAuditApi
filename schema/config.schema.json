@@ -1,0 +1,287 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Config Schema",
+  "description": "The config schema",
+  "type": "object",
+  "required": [
+    "parties",
+    "pollsters",
+    "sources"
+  ],
+  "properties": {
+    "parties": {
+      "description": "The parties that show up within the data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "abbreviations",
+          "color",
+          "founded"
+        ],
+        "properties": {
+          "name": {
+            "description": "The party's name",
+            "type": "string"
+          },
+          "abbreviations": {
+            "description": "1-2 abbreviations for this party. The second abbreviation should be the french variant",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true,
+            "maxItems": 2
+          },
+          "founded": {
+            "description": "The date the party was founded using the format YYYY-MM-DD",
+            "type": "string",
+            "format": "date"
+          },
+          "dissolved": {
+            "description": "The date the party was dissolved using the format YYYY-MM-DD. Don't include if the party is still active.",
+            "type": "string",
+            "format": "date"
+          },
+          "ideology": {
+            "description": "The ideologies of this party",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "position": {
+            "description": "The political position of this party",
+            "type": "string"
+          },
+          "color": {
+            "description": "The official color of the party",
+            "type": "string",
+            "pattern": "#([0-9A-F]{3}){1,2}"
+          },
+          "graphColor": {
+            "description": "A color used to represent the party on a graph. These colors are usually easier on the eyes",
+            "type": "string",
+            "pattern": "#([0-9A-F]{3}){1,2}"
+          },
+          "website": {
+            "description": "A link to the parties website",
+            "type": "string",
+            "format": "uri"
+          },
+          "wikipedia": {
+            "description": "A link to the parties wikipedia page",
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "pollsters": {
+      "description": "The pollsters that show up within the data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "active",
+          "canadian",
+          "cric",
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "description": "The most commonly used name for this pollster",
+            "type": "string"
+          },
+          "active": {
+            "description": "If the pollster is still active",
+            "type": "boolean"
+          },
+          "canadian": {
+            "description": "If the pollster is canadian",
+            "type": "boolean"
+          },
+          "cric": {
+            "description": "If the pollster is a member of CRIC (https://www.canadianresearchinsightscouncil.ca/member-directory/)",
+            "type": "boolean"
+          },
+          "website": {
+            "description": "The pollsters website. Don't include if the pollster doesn't have a website.",
+            "type": "string",
+            "format": "uri"
+          },
+          "wikipedia": {
+            "description": "The pollsters wikipedia page. Don't include if the pollster doesn't have a wikipedia page.",
+            "type": "string",
+            "format": "uri"
+          },
+          "alternatives": {
+            "description": "Other names which might be used within the data.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "description": "The sources where we get our data from",
+      "type": "object",
+      "properties": {
+        "wikipedia": {
+          "description": "A list of sources from Wikipedia",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "url",
+              "year"
+            ],
+            "dependencies": {
+              "options": ["sectionTables"],
+              "manualTimes": ["sectionTables", "options"]
+            },
+            "properties": {
+              "url": {
+                "description": "The url to get the data from",
+                "type": "string",
+                "format": "uri"
+              },
+              "year": {
+                "description": "The electoral year that this data represents",
+                "type": "integer",
+                "minimum": 1867
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "sectionTables",
+                  "options"
+                ],
+                "properties": {
+                  "sectionTables": {
+                    "$ref": "#/definitions/sectionTables"
+                  },
+                  "options": {
+                    "$ref": "#/definitions/options"
+                  },
+                  "manualTimes": {
+                    "$ref": "#/definitions/manualTimes"
+                  }
+                }
+              },
+              {
+                "required": [
+                  "chunks"
+                ],
+                "properties": {
+                  "chunks": {
+                    "description": "Chunks allows you to define multiple table endpoints from a single page",
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/definitions/chunkPiece"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "chunkPiece": {
+      "description": "Identifies an endpoint which represents an extracted table of data",
+      "type": "object",
+      "required": [
+        "sectionTables",
+        "options"
+      ],
+      "properties": {
+        "sectionTables": {
+          "$ref": "#/definitions/sectionTables"
+        },
+        "options": {
+          "$ref": "#/definitions/options"
+        },
+        "manualTimes": {
+          "$ref": "#/definitions/manualTimes"
+        }
+      }
+    },
+    "sectionTables": {
+      "oneOf": [
+        {
+          "description": "An array of the section headers that the tables can be found under",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        {
+          "description": "An object of the section headers that the tables can be found under, and their values to rename them internally",
+          "type": "object",
+          "patternProperties": {
+            ".*": {
+              "description": "The name that should be used for this table, instead of the section name",
+              "type": "string"
+            }
+          }
+        }
+      ]
+    },
+    "options": {
+      "description": "The options that specify the headings and how to extract the data from the tables",
+      "type": "object",
+      "required": [
+        "headings"
+      ],
+      "properties": {
+        "ignoreColumns": {
+          "description": "An array of integers, to specify what columns to ignore in the table",
+          "type": "array",
+          "items": {
+            "type": "integer"
+          },
+          "uniqueItems": true
+        },
+        "headings": {
+          "description": "An array of headings to map them internally",
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "manualTimes": {
+      "description": "States that the table should be split into multiple sections based on date ranges",
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "description": "The name that should be used for this table, which is a range of the original table",
+          "type": "object",
+          "properties": {
+            "to": {
+              "description": "Get all data until this date",
+              "type": "string",
+              "format": "date"
+            },
+            "from": {
+              "description": "Get all data starting from this date",
+              "type": "string",
+              "format": "date"
+            }
+          }
+        }
+      }
+    }
+  }
+}

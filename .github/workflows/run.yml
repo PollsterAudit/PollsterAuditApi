@@ -26,6 +26,8 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
+      - name: Validate config
+        run: node src/validateConfig.js
       - name: Run Index
         run: node src/index.js
       - name: Check if index.json exists
