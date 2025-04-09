@@ -192,6 +192,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
 }
 
 async function writeIndex(index) {
+    console.log("Writing Index");
     const fileName = 'index.json';
     const directory = outputDir + "v" + apiVersion + "/";
 
@@ -224,6 +225,7 @@ async function writeIndex(index) {
 }
 
 async function writeFromConfig(key) {
+    console.log("Writing " + key);
     const fileName = key + '.json';
     const directory = outputDir + "v" + apiVersion + "/";
 
@@ -257,7 +259,8 @@ async function processWikipediaSource(page, year, source, chunkSource, index) {
     }
 }
 
-(async () => {
+const index = async () => {
+    console.log("Start indexing");
     try {
         const sources = config["sources"];
         let index = {};
@@ -288,4 +291,8 @@ async function processWikipediaSource(page, year, source, chunkSource, index) {
     } catch (error) {
         console.error('An error has occurred:', error);
     }
-})();
+}
+
+index()
+    .then(() => console.log("Finished"))
+    .catch(err => console.log(err));

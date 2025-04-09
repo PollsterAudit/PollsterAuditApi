@@ -6,6 +6,7 @@
     "start": "node src/index.js",
     "api": "node src/index.js & node src/api.js"
   },
+  "type": "commonjs",
   "keywords": [],
   "author": "FX Morin",
   "license": "MIT",

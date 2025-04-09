@@ -26,8 +26,8 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm ci
-      - name: Run API update
-        run: npm run api
+      - name: Run Index
+        run: node src/index.js
       - name: Check if index.json exists
         if: ${{ hashFiles('output/v1/index.json') == '' }}
         run: exit 1
@@ -37,6 +37,8 @@ jobs:
       - name: Check if pollsters.json exists
         if: ${{ hashFiles('output/v1/pollsters.json') == '' }}
         run: exit 1
+      - name: Run API
+        run: node src/api.js
       - name: Push API changes
         uses: s0/git-publish-subdir-action@develop
         env:
