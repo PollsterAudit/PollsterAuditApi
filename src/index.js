@@ -16,9 +16,51 @@ async function getWikipediaPage(url) {
     });
 }
 
-async function getTableFromWikipediaPage(wikipediaPage, headerName, options) {
-    const $ = cheerio.load(wikipediaPage.data);
+function createCitation(url, date, sourceExt = null) {
+    const citation = {
+        "url": url,
+        "date": date
+    };
+    if (sourceExt) {
+        citation["sourceExt"] = sourceExt;
+    }
+    return citation;
+}
 
+function getWikipediaDateAndSourceExt($ref) {
+    let sourceExt = null;
+    const openUrl = $ref.find('.reference-text span[title]');
+    if (openUrl) {
+        const openUrlTitle = openUrl.attr('title');
+        if (openUrlTitle) {
+            const searchParams = new URLSearchParams(openUrlTitle);
+            searchParams.forEach((value, key) => {
+                if (key !== "rft.date") {
+                    if (sourceExt == null) {
+                        sourceExt = {};
+                    }
+                    sourceExt[key] = value;
+                }
+            });
+            if (searchParams.get("rft.date") !== null) {
+                return [searchParams.get("rft.date"), sourceExt];
+            }
+        }
+    }
+    // Failed to find a valid openUrl, attempt to parse the date from the accessdate. Skip other source extensions
+    const accessdate = $ref.find('.reference-text cite .reference-accessdate');
+    if (accessdate) {
+        const rawText = accessdate.text().trim();
+        const cleaned = rawText.replace(/^\.?\s*Retrieved\s*/i, '').trim();
+        if (cleaned && cleaned !== "") {
+            return [new Date(cleaned).toISOString().substring(0, 10), sourceExt];
+        }
+    }
+
+    return [null, sourceExt];
+}
+
+async function getTableFromWikipediaPage($, headerName, options) {
     // Find the header element that contains the name
     const checkHeaderName = headerName.trim().toUpperCase();
     const header = $('h1, h2, h3, h4, h5, h6')
@@ -61,7 +103,60 @@ function cleanPollingFirmName(item) {
     return item.replace(regex, `$1`);
 }
 
-function processTable(table, headings, ignoreColumns) {
+function processTable($, table, headings, citations, ignoreColumns) {
+    const idToUrlMap = {};
+    const citationMap = {};
+
+    // Find references early
+    const citationKey = "" + headings.indexOf("Citation");
+    for (let i = 0; i < table.length; i++) {
+        const row = table[i];
+        if (row) {
+            const citation = row[citationKey];
+            if (citation) {
+                const $citation = cheerio.load(citation);
+                if ($citation !== null) {
+                    const citationText = $citation.text().trim();
+                    if (citationText !== null && citationText !== '') {
+                        // Find and replace citation reference with url
+                        const href = $citation('a').first().attr('href');
+                        if (href) {
+                            const citationId = href.replace(/^#/, '');
+                            if (!(citationId in citationMap)) {
+                                citationMap[citationId] = [];
+                            }
+                            citationMap[citationId].push(i);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Loop through each .references block, and map references to id's
+    if (Object.keys(citationMap).length > 0) {
+        $('.references').each((_, el) => {
+            $(el).children('[id]').each((_, child) => { // Each reference
+                const $child = $(child);
+                const id = $child.attr('id');
+                if (id && citationMap[id]) { // Due to early check, we can skip most of these
+                    // Find the href inside .reference-text > cite > a
+                    const hrefElem = $child.find('.reference-text cite a[href]');
+                    if (hrefElem) {
+                        const url = hrefElem.attr('href');
+                        if (url) {
+                            const dateAndSourceExt = getWikipediaDateAndSourceExt($child);
+                            const urlData = [url, dateAndSourceExt[0], dateAndSourceExt[1]];
+                            for (const i of citationMap[id]) {
+                                idToUrlMap[i] = urlData;
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    }
+
     const newTable = [];
     let skipped = 0;
     main : for (let i = 0; i < table.length; i++) {
@@ -72,6 +167,15 @@ function processTable(table, headings, ignoreColumns) {
             skipped++;
             continue; // Invalid table data (usually an info row)
         }
+
+        // Strip remaining HTML from row
+        for (const key in row) {
+            if (key === citationKey) {
+                continue;
+            }
+            row[key] = cheerio.load(row[key]).text();
+        }
+
         const pollingFirm = row["" + headings.indexOf("PollingFirm")];
         if (pollingFirm == null) {
             // TODO: Log, and send a webhook so we can investigate
@@ -85,6 +189,7 @@ function processTable(table, headings, ignoreColumns) {
             skipped++;
             continue; // Invalid table data (usually an info row)
         }
+
         let item = [];
         let innerSkipped = 0;
         for (let j = 0; j < headings.length; j++) {
@@ -102,6 +207,17 @@ function processTable(table, headings, ignoreColumns) {
                     continue main; // Invalid table data (usually voting results (E.x. 1988))
                 }
                 item[j] = new Date(date).getTime();
+            } else if (heading === "Citation") {
+                if (i in idToUrlMap) {
+                    // Replace citation url
+                    const urlData = idToUrlMap[i];
+                    item[j] = urlData[0]; // Change row from citation reference to link
+                    citations.push(createCitation(urlData[0], urlData[1], urlData[2]));
+                } else {
+                    item[j] = "";
+                }
+            } else if (heading === "PollingMethod") {
+                item[j] = row["" + x];
             } else {
                 item[j] = parseCleanFloat(row["" + x]);
             }
@@ -111,19 +227,21 @@ function processTable(table, headings, ignoreColumns) {
     return newTable;
 }
 
-async function getWikipediaSection(page, year, sectionId, sectionName, options, manualTimes, index) {
+async function getWikipediaSection(page, year, sectionId, sectionName, options, manualTimes, index, citations) {
     try {
-        if (!("forceIndexAsNumber" in options)) {
-            options["forceIndexAsNumber"] = true;
-        }
+        options["forceIndexAsNumber"] = true;
+        options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
 
         let from = Number.MAX_SAFE_INTEGER;
         let to = Number.MIN_SAFE_INTEGER;
         let headings = options["headings"];
-        const table = await getTableFromWikipediaPage(page, sectionId, options);
+        const $ = cheerio.load(page.data);
+        const table = await getTableFromWikipediaPage($, sectionId, options);
         const processedTable = processTable(
+            $,
             table,
             headings,
+            citations,
             ("ignoreColumns" in options ? options.ignoreColumns : [])
         );
 
@@ -224,6 +342,22 @@ async function writeIndex(index) {
     });
 }
 
+async function writeCitations(citations) {
+    console.log("Writing Citations");
+    const fileName = 'citations.json';
+    const directory = outputDir + "v" + apiVersion + "/";
+
+    const data = JSON.stringify(citations);
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+    fs.writeFile(directory + fileName, data, err => {
+        if (err) {
+            console.error(err);
+        }
+    });
+}
+
 async function writeFromConfig(key) {
     console.log("Writing " + key);
     const fileName = key + '.json';
@@ -240,7 +374,7 @@ async function writeFromConfig(key) {
     });
 }
 
-async function processWikipediaSource(page, year, source, chunkSource, index) {
+async function processWikipediaSource(page, year, source, chunkSource, index, citations) {
     const sectionTables = chunkSource != null && "sectionTables" in chunkSource ?
         chunkSource["sectionTables"] : source["sectionTables"];
     const options = chunkSource != null && "options" in chunkSource ?
@@ -250,38 +384,63 @@ async function processWikipediaSource(page, year, source, chunkSource, index) {
     // If section table is an object, it means we should rename the sections
     if (!Array.isArray(sectionTables)) {
         for (let sectionId in sectionTables) {
-            await getWikipediaSection(page, year, sectionId, sectionTables[sectionId], options, manualTimes, index);
+            await getWikipediaSection(page, year, sectionId, sectionTables[sectionId], options, manualTimes,
+                index, citations);
         }
     } else {
         for (const section of sectionTables) {
-            await getWikipediaSection(page, year, section, section, options, manualTimes, index);
+            await getWikipediaSection(page, year, section, section, options, manualTimes, index, citations);
         }
     }
+}
+
+function setupCitations(citations, year, source, sourceUrl) {
+    let innerCitations = citations;
+    if (!(year in innerCitations)) {
+        innerCitations[year] = {};
+    }
+    innerCitations = innerCitations[year];
+    if (!(source in innerCitations)) {
+        innerCitations[source] = {};
+    }
+    innerCitations = innerCitations[source];
+    if (!(sourceUrl in innerCitations)) {
+        innerCitations[sourceUrl] = {};
+    }
+    innerCitations[sourceUrl] = [];
+    return innerCitations[sourceUrl];
 }
 
 const index = async () => {
     console.log("Start indexing");
     try {
         const sources = config["sources"];
-        let index = {};
+        const index = {};
+        const citations = {};
 
         // Wikipedia
         const wikipedia = sources["wikipedia"];
         for (const source of wikipedia) {
             const url = source["url"];
             const year = source["year"];
+
+            let innerCitations = setupCitations(citations, year, "wikipedia", url);
+
             const page = await getWikipediaPage(url);
             if ("chunks" in source) {
                 for (const chunk of source["chunks"]) {
-                    await processWikipediaSource(page, year, source, chunk, index);
+                    await processWikipediaSource(page, year, source, chunk, index, innerCitations);
                 }
             } else {
-                await processWikipediaSource(page, year, source, null, index);
+                await processWikipediaSource(page, year, source, null, index, innerCitations);
             }
         }
 
         // Index
         await writeIndex(index);
+
+        // Citations
+        await writeCitations(citations);
 
         // Parties
         await writeFromConfig("parties");
