@@ -1,6 +1,6 @@
 # 📡 Pollster Audit API
 
-<p align="center">
+<div align="center">
 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PollsterAudit/PollsterAuditApi/run.yml)](https://github.com/PollsterAudit/PollsterAuditApi/actions)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/PollsterAudit/PollsterAuditApi/blob/main/LICENSE)
@@ -8,7 +8,7 @@
 [![Discord](https://img.shields.io/discord/1359947804981858324?logo=discord)](https://discord.gg/6grVnjE3DC)
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/pollster-audit)](https://opencollective.com/pollster-audit)
 
-</p>
+</div>
 
 The **Pollster Audit API** powers [PollsterAudit.ca](https://www.pollsteraudit.ca) by providing a **clean, public dataset of Canadian opinion polling**, updated hourly and accessible at [api.pollsteraudit.ca](https://api.pollsteraudit.ca).
 
