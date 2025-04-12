@@ -1,1 +1,1 @@
-{"headings": ["PollingFirm","Date","LPC","PC","NDP","Others","MarginOfError","SampleSize"],"data":[["Gallup",-131328000000,44,29,18,9,null,null],["Gallup",-134179200000,47,30,16,7,null,null]] }
+{"headings": ["PollingFirm","Date","Citation","LPC","PC","NDP","Others","MarginOfError","SampleSize"],"data":[["Gallup",-131328000000,"",44,29,18,9,null,null],["Gallup",-134179200000,"",47,30,16,7,null,null]] }
