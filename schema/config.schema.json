@@ -257,7 +257,25 @@
           "items": {
             "type": "string"
           },
-          "uniqueItems": true
+          "uniqueItems": true,
+          "minItems": 3,
+          "allOf": [
+            {
+              "contains": {
+                "const": "PollingFirm"
+              }
+            },
+            {
+              "contains": {
+                "const": "Date"
+              }
+            },
+            {
+              "contains": {
+                "const": "Citation"
+              }
+            }
+          ]
         }
       }
     },
