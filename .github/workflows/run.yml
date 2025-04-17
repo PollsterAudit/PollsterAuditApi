@@ -18,8 +18,12 @@ jobs:
     name: Update API
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout Master Branch
         uses: actions/checkout@v4
+      - name: Checkout API Branch
+        uses: actions/checkout@v4
+        ref: 'api'
+        path: 'api'
       - name: Setup Node
         uses: actions/setup-node@v4
         with:

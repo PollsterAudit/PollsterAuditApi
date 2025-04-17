@@ -394,6 +394,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2021_Canadian_federal_election",
         "year": 2021,
+        "locked": true,
         "sectionTables": ["Campaign period", "Pre-campaign period"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "CPC", "LPC", "NDP", "BQ", "GPC", "PPC", "Others",
@@ -403,6 +404,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2019_Canadian_federal_election",
         "year": 2019,
+        "locked": true,
         "sectionTables": ["Campaign period", "Pre-campaign period"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "CPC", "NDP", "BQ", "GPC", "PPC", "Others",
@@ -412,6 +414,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2015_Canadian_federal_election",
         "year": 2015,
+        "locked": true,
         "sectionTables": ["Campaign period", "Pre-campaign period"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "CPC", "NDP", "LPC", "BQ", "GPC", "Others",
@@ -421,6 +424,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2011_Canadian_federal_election",
         "year": 2011,
+        "locked": true,
         "chunks": [
           {
             "sectionTables": ["Campaign period"],
@@ -440,6 +444,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2008_Canadian_federal_election",
         "year": 2008,
+        "locked": true,
         "sectionTables": ["Polls"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "CPC", "LPC", "NDP", "BQ", "GPC"]
@@ -456,6 +461,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2006_Canadian_federal_election",
         "year": 2006,
+        "locked": true,
         "sectionTables": ["Poll results"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "CPC", "NDP", "BQ", "GPC", "MarginOfError",
@@ -473,6 +479,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2004_Canadian_federal_election",
         "year": 2004,
+        "locked": true,
         "chunks": [
           {
             "sectionTables": {
@@ -506,6 +513,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2000_Canadian_federal_election",
         "year": 2000,
+        "locked": true,
         "sectionTables": {
           "Campaign period": "Campaign period",
           "During the 36th Parliament of Canada": "Pre-campaign period"
@@ -518,6 +526,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1997_Canadian_federal_election",
         "year": 1997,
+        "locked": true,
         "sectionTables": {
           "Campaign period": "Campaign period",
           "During the 35th Parliament of Canada": "Pre-campaign period"
@@ -530,6 +539,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1993_Canadian_federal_election",
         "year": 1993,
+        "locked": true,
         "sectionTables": {
           "Campaign period": "Campaign period",
           "During the 34th Parliament of Canada": "Pre-campaign period"
@@ -542,6 +552,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1988_Canadian_federal_election",
         "year": 1988,
+        "locked": true,
         "sectionTables": {
           "Campaign period": "Campaign period",
           "During the 33rd Parliament of Canada": "Pre-campaign period"
@@ -553,6 +564,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1984_Canadian_federal_election",
         "year": 1984,
+        "locked": true,
         "sectionTables": {
           "Campaign period": "Campaign period",
           "During the 32nd Parliament of Canada": "Pre-campaign period"
@@ -564,6 +576,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/1980_Canadian_federal_election",
         "year": 1980,
+        "locked": true,
         "sectionTables": ["Opinion polling"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "SC", "Others",
@@ -581,6 +594,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1979_Canadian_federal_election",
         "year": 1979,
+        "locked": true,
         "sectionTables": ["During the 30th Parliament of Canada"],
         "options": {
           "ignoreColumns": [8],
@@ -599,6 +613,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1974_Canadian_federal_election",
         "year": 1974,
+        "locked": true,
         "sectionTables": ["During the 29th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -615,6 +630,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1972_Canadian_federal_election",
         "year": 1972,
+        "locked": true,
         "sectionTables": ["During the 28th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -631,6 +647,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1968_Canadian_federal_election",
         "year": 1968,
+        "locked": true,
         "sectionTables": ["During the 27th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -647,6 +664,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1965_Canadian_federal_election",
         "year": 1965,
+        "locked": true,
         "sectionTables": ["During the 26th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -663,6 +681,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1963_Canadian_federal_election",
         "year": 1963,
+        "locked": true,
         "sectionTables": ["During the 25th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -679,6 +698,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1962_Canadian_federal_election",
         "year": 1962,
+        "locked": true,
         "sectionTables": ["During the 24th Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "PC", "LPC", "NDP", "Others", "MarginOfError", "SampleSize"]
@@ -695,6 +715,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/1958_Canadian_federal_election",
         "year": 1958,
+        "locked": true,
         "sectionTables": ["During the 23rd Parliament of Canada"],
         "options": {
           "ignoreColumns": [8],
@@ -713,6 +734,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1957_Canadian_federal_election",
         "year": 1957,
+        "locked": true,
         "sectionTables": ["During the 22rd Parliament of Canada"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "PC", "LPC", "CCF", "SC", "Others",
@@ -730,6 +752,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_1953_Canadian_federal_election",
         "year": 1953,
+        "locked": true,
         "sectionTables": ["During the 22nd Parliament of Canada"],
         "options": {
           "ignoreColumns": [8],
@@ -748,6 +771,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/1949_Canadian_federal_election",
         "year": 1949,
+        "locked": true,
         "sectionTables": ["Opinion polling"],
         "options": {
           "ignoreColumns": [9],
@@ -766,6 +790,7 @@
       {
         "url": "https://en.wikipedia.org/wiki/1945_Canadian_federal_election",
         "year": 1945,
+        "locked": true,
         "sectionTables": ["Opinion polling"],
         "options": {
           "headings": ["PollingFirm", "Date", "Citation", "LPC", "PC", "CCF", "SC", "BP", "Others",

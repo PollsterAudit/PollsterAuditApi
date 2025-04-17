@@ -154,6 +154,10 @@
                 "description": "The electoral year that this data represents",
                 "type": "integer",
                 "minimum": 1867
+              },
+              "locked": {
+                "description": "If the api shouldn't re-download this data if it already has a copy of it",
+                "type": "boolean"
               }
             },
             "oneOf": [

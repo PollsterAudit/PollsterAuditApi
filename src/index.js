@@ -414,6 +414,7 @@ function setupCitations(citations, year, source, sourceUrl) {
 const index = async () => {
     console.log("Start indexing");
     try {
+        const hasApiDir = fs.existsSync("../api")
         const sources = config["sources"];
         const index = {};
         const citations = {};
@@ -421,8 +422,13 @@ const index = async () => {
         // Wikipedia
         const wikipedia = sources["wikipedia"];
         for (const source of wikipedia) {
-            const url = source["url"];
             const year = source["year"];
+            if (hasApiDir && "locked" in source && source["locked"]) {
+                if (fs.existsSync("../api/v" + apiVersion + "/" + year)) {
+                    continue; // Skip this year
+                }
+            }
+            const url = source["url"];
 
             let innerCitations = setupCitations(citations, year, "wikipedia", url);
 
