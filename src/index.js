@@ -424,7 +424,11 @@ const index = async () => {
         for (const source of wikipedia) {
             const year = source["year"];
             if (hasApiDir && "locked" in source && source["locked"]) {
-                if (fs.existsSync("../api/v" + apiVersion + "/" + year)) {
+                const dir = "../api/v" + apiVersion + "/" + year;
+                if (fs.existsSync(dir)) {
+                    fs.cp(dir, "../output/v" + apiVersion + "/" + year, {recursive: true}, (e) => {
+                        console.log("Copied data for year " + year + " from last commit!");
+                    });
                     continue; // Skip this year
                 }
             }
