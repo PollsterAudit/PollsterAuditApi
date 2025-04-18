@@ -611,6 +611,12 @@ const index = async () => {
                 console.error(err);
             }
         });
+        // Add empty robots.txt
+        fs.writeFile(outputDir + "robots.txt", "", err => {
+            if (err) {
+                console.error(err);
+            }
+        });
     } catch (error) {
         console.error('An error has occurred:', error);
     }
