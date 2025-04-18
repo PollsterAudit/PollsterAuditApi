@@ -71,14 +71,15 @@ To run the API locally:
    npm start
    ```
 
-This will generate the `/output` folder locally, which mirrors* what gets published at [api.pollsteraudit.ca](https://api.pollsteraudit.ca).  
-\* excluding `CNAME` & `index.html`, you can run `npm run api` to also make these files.
+This will generate the `./output` folder locally, which mirrors what gets published at [api.pollsteraudit.ca](https://api.pollsteraudit.ca).
 
 ---
 
 ## 🌐 Translations
 
-This repository contains code and data only, but is part of the larger bilingual [PollsterAudit](https://github.com/PollsterAudit) project. We welcome localization efforts for future data categories (e.g. poll question phrasing, region names).
+Translation support for the API landing pages hasn't been implemented yet.   
+This API is part of the larger bilingual [PollsterAudit](https://github.com/PollsterAudit) project.  
+We are always working on improving the service, and adding translations to these pages is something we plan on implementing later.
 
 ---
 
