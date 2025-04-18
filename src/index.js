@@ -436,14 +436,14 @@ const index = async () => {
             const year = source["year"];
             if (hasApiDir && "locked" in source && source["locked"]) {
                 const dir = apiDir + "v" + apiVersion + "/" + year;
-                if (fs.existsSync(dir)) {
-                    fs.cp(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true}, (e) => {
-                        if (e) {
-                            console.error(e);
-                        } else {
-                            console.log("Copied data for year " + year + " from last commit!");
-                        }
-                    });
+
+                if (fs.existsSync(dir) && year in apiIndex) {
+                    try {
+                        fs.cpSync(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true});
+                        console.log("Copied data for year " + year + " from last commit!");
+                    } catch (err) {
+                        console.error('Error copying files:', err);
+                    }
                     index[year] = apiIndex[year];
                     citations[year] = apiCitations[year];
                     continue; // Skip this year
