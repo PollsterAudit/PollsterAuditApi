@@ -7,6 +7,7 @@ const config = require('../config.json');
 
 const apiVersion = 1;
 const outputDir = "./output/";
+const apiDir = "./api/";
 const baseUrl = "https://api.pollsteraudit.ca/";
 
 async function getWikipediaPage(url) {
@@ -414,7 +415,7 @@ function setupCitations(citations, year, source, sourceUrl) {
 const index = async () => {
     console.log("Start indexing");
     try {
-        const hasApiDir = fs.existsSync("../api")
+        const hasApiDir = fs.existsSync(apiDir)
         const sources = config["sources"];
         const index = {};
         const citations = {};
@@ -424,9 +425,9 @@ const index = async () => {
         for (const source of wikipedia) {
             const year = source["year"];
             if (hasApiDir && "locked" in source && source["locked"]) {
-                const dir = "../api/v" + apiVersion + "/" + year;
+                const dir = apiDir + "v" + apiVersion + "/" + year;
                 if (fs.existsSync(dir)) {
-                    fs.cp(dir, "../output/v" + apiVersion + "/" + year, {recursive: true}, (e) => {
+                    fs.cp(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true}, (e) => {
                         console.log("Copied data for year " + year + " from last commit!");
                     });
                     continue; // Skip this year
