@@ -77,7 +77,11 @@ async function getTableFromWikipediaPage($, headerName, options) {
                     foundHeader = true;
                 }
             } else if (el.tagName && el.tagName.toLowerCase() === 'table') {
-                return tabletojson.convert($.html($(el)), options)[0];
+                const el2 = $(el);
+                // Prevents the sidebar from being selected, visible in 1980
+                if (!el2.attr("class").includes("sidebar")) {
+                    return tabletojson.convert($.html(el2), options)[0];
+                }
             }
         }
         console.log('Failed to find a table after the header');
@@ -245,6 +249,10 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
             citations,
             ("ignoreColumns" in options ? options.ignoreColumns : [])
         );
+        if (processedTable.length === 0) {
+            console.error(`Error fetching tables for year ${year} with sectionId ${sectionId}!`);
+            return;
+        }
 
         const dateIndex = headings.indexOf("Date");
         processedTable.forEach(element => {
@@ -323,8 +331,8 @@ async function writeIndex(index) {
         let from = Number.MAX_SAFE_INTEGER;
         let to = Number.MIN_SAFE_INTEGER;
         for (let period in yearElement) {
-            let periodElement = yearElement[period];
-            let range = periodElement["range"];
+            const periodElement = yearElement[period];
+            const range = periodElement["range"];
             if (range[0] < from) {
                 from = range[0];
             }
