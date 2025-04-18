@@ -1,0 +1,45 @@
+name: Run api with cleanup
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    permissions:
+      contents: write
+    name: Update API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Master Branch
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - name: Validate config
+        run: node src/validateConfig.js
+      - name: Run Index
+        run: node src/index.js
+      - name: Check if index.json exists
+        if: ${{ hashFiles('output/v1/index.json') == '' }}
+        run: exit 1
+      - name: Check if parties.json exists
+        if: ${{ hashFiles('output/v1/parties.json') == '' }}
+        run: exit 1
+      - name: Check if pollsters.json exists
+        if: ${{ hashFiles('output/v1/pollsters.json') == '' }}
+        run: exit 1
+      - name: Push API changes
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: api
+          FOLDER: output
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MESSAGE: "Update API: last api changes ({sha})"
+          SKIP_EMPTY_COMMITS: true
