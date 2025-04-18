@@ -497,7 +497,7 @@ function createLandingPages(index) {
                         "dateModified": dateModified,
                         "temporalCoverage": from + "/" + to
                     });
-                    endpoints += `<strong><code>/v${apiVersion}/${year}/${period}.json</code></strong><br/>` +
+                    endpoints += `<li><strong><code>/v${apiVersion}/${year}/${period}.json</code></strong><br/>` +
                         `<a href="${periodElement["url"]}" target="_blank">View JSON</a><br/>` +
                         `<small>Get opinion polling data between ${from} and ${to}</small></li>`;
                 }
