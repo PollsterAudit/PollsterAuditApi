@@ -4,7 +4,6 @@
 
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/PollsterAudit/PollsterAuditApi/run.yml)](https://github.com/PollsterAudit/PollsterAuditApi/actions)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](https://github.com/PollsterAudit/PollsterAuditApi/blob/main/LICENSE)
-![Hits Of Code](https://hitsofcode.com/github/pollsteraudit/pollsterauditapi?branch=master)
 [![Discord](https://img.shields.io/discord/1359947804981858324?logo=discord)](https://discord.gg/6grVnjE3DC)
 [![Open Collective backers and sponsors](https://img.shields.io/opencollective/all/pollster-audit)](https://opencollective.com/pollster-audit)
 
