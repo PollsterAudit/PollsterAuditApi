@@ -237,9 +237,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
         options["forceIndexAsNumber"] = true;
         options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
 
-        let from = Number.MAX_SAFE_INTEGER;
-        let to = Number.MIN_SAFE_INTEGER;
-        let headings = options["headings"];
+        const headings = options["headings"];
         const $ = cheerio.load(page.data);
         const table = await getTableFromWikipediaPage($, sectionId, options);
         const processedTable = processTable(
@@ -255,17 +253,8 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
         }
 
         const dateIndex = headings.indexOf("Date");
-        processedTable.forEach(element => {
-            let time = element[dateIndex];
-            if (time < from) {
-                from = time;
-            }
-            if (time > to) {
-                to = time;
-            }
-        });
-
         const processedTables = {};
+        const processedTableRanges = {};
         if (manualTimes) {
             for (let manualName in manualTimes) {
                 const times = manualTimes[manualName];
@@ -277,16 +266,38 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
                 if (times["to"]) {
                     timesTo = new Date(times["to"]).getTime();
                 }
+                let from = Number.MAX_SAFE_INTEGER;
+                let to = Number.MIN_SAFE_INTEGER;
                 const manualTable = [];
                 for (const item of processedTable) {
-                    if (item[dateIndex] <= timesTo && item[dateIndex] >= timesFrom) {
+                    const time = item[dateIndex];
+                    if (time <= timesTo && time >= timesFrom) {
                         manualTable.push(item);
+                        if (time < from) {
+                            from = time;
+                        }
+                        if (time > to) {
+                            to = time;
+                        }
                     }
                 }
                 processedTables[manualName] = manualTable;
+                processedTableRanges[manualName] = [from, to];
             }
         } else {
+            let from = Number.MAX_SAFE_INTEGER;
+            let to = Number.MIN_SAFE_INTEGER;
             processedTables[sectionName] = processedTable;
+            processedTable.forEach(element => {
+                let time = element[dateIndex];
+                if (time < from) {
+                    from = time;
+                }
+                if (time > to) {
+                    to = time;
+                }
+            });
+            processedTableRanges[sectionName] = [from, to];
         }
 
         for (let tableName in processedTables) {
@@ -310,7 +321,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
             index[year][id] = {
                 "name": tableName,
                 "url": baseUrl + "v" + apiVersion + "/" + year + "/" + fileName,
-                "range": [from, to]
+                "range": processedTableRanges[tableName]
             };
         }
     } catch (error) {
