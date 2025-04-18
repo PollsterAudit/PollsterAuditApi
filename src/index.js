@@ -317,6 +317,9 @@ async function writeIndex(index) {
 
     for (let year in index) {
         let yearElement = index[year];
+        if ("range" in yearElement) {
+            continue;
+        }
         let from = Number.MAX_SAFE_INTEGER;
         let to = Number.MIN_SAFE_INTEGER;
         for (let period in yearElement) {
@@ -412,6 +415,10 @@ function setupCitations(citations, year, source, sourceUrl) {
     return innerCitations[sourceUrl];
 }
 
+function getJsonFile(path) {
+    return JSON.parse(fs.readFileSync(path));
+}
+
 const index = async () => {
     console.log("Start indexing");
     try {
@@ -419,6 +426,9 @@ const index = async () => {
         const sources = config["sources"];
         const index = {};
         const citations = {};
+
+        const apiIndex = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/index.json") : null;
+        const apiCitations = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/citations.json") : null;
 
         // Wikipedia
         const wikipedia = sources["wikipedia"];
@@ -428,8 +438,14 @@ const index = async () => {
                 const dir = apiDir + "v" + apiVersion + "/" + year;
                 if (fs.existsSync(dir)) {
                     fs.cp(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true}, (e) => {
-                        console.log("Copied data for year " + year + " from last commit!");
+                        if (e) {
+                            console.error(e);
+                        } else {
+                            console.log("Copied data for year " + year + " from last commit!");
+                        }
                     });
+                    index[year] = apiIndex[year];
+                    citations[year] = apiCitations[year];
                     continue; // Skip this year
                 }
             }
