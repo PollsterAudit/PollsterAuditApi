@@ -232,6 +232,15 @@ function processTable($, table, headings, citations, ignoreColumns) {
     return newTable;
 }
 
+function htmlPreprocessor(html, variables) {
+    const variableRegex = /{{(?<variableName>\w*?)}}/gm;
+    return html.replace(variableRegex, (match, variableName) => {
+        if (variableName in variables) {
+            return variables[variableName];
+        }
+    });
+}
+
 async function getWikipediaSection(page, year, sectionId, sectionName, options, manualTimes, index, citations) {
     try {
         options["forceIndexAsNumber"] = true;
@@ -434,6 +443,88 @@ function setupCitations(citations, year, source, sourceUrl) {
     return innerCitations[sourceUrl];
 }
 
+function createLandingPages(index) {
+    const currentDate = new Date();
+    const dateModified = currentDate.toISOString().split('T')[0];
+    // Create Main landing page
+    fs.readFile("./src/website/index.html", "utf8", (err, data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        const parts = [];
+        let yearEndpoints = "";
+        for (let year in index) {
+            const pageUrl = baseUrl + "v" + apiVersion + "/" + year + "/";
+            parts.push(pageUrl);
+            yearEndpoints += `<li><strong>${year}</strong><br/>` +
+                `<a href="${pageUrl}">View Page</a><br/>` +
+                `<small>Dataset of all opinion polling done for the ${year} election</small></li>`;
+        }
+        const variables = {
+            "dateModified": dateModified,
+            "parts": JSON.stringify(parts, null, 2),
+            "yearEndpoint": yearEndpoints,
+            "currentYear": currentDate.getFullYear()
+        }
+        const formattedIndex = htmlPreprocessor(data, variables);
+        fs.writeFile(outputDir + "index.html", formattedIndex, err => {
+            if (err) {
+                console.error(err);
+            }
+        });
+    });
+    // Create year landing pages
+    fs.readFile("./src/website/year-index.html", "utf8", (err, data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        for (let year in index) {
+            const distributions = [];
+            let endpoints = "";
+            const yearElement = index[year];
+            for (let period in yearElement) {
+                if (period !== "range") {
+                    const periodElement = yearElement[period];
+                    const from = (new Date(periodElement["range"][0])).toISOString().split('T')[0];
+                    const to = (new Date(periodElement["range"][1])).toISOString().split('T')[0];
+                    distributions.push({
+                        "@type":"DataDownload",
+                        "encodingFormat":"JSON",
+                        "contentUrl": periodElement["url"],
+                        "name": year + " - " + periodElement["name"],
+                        "dateModified": dateModified,
+                        "temporalCoverage": from + "/" + to
+                    });
+                    endpoints += `<strong><code>/v${apiVersion}/${year}/${period}.json</code></strong><br/>` +
+                        `<a href="${periodElement["url"]}" target="_blank">View JSON</a><br/>` +
+                        `<small>Get opinion polling data between ${from} and ${to}</small></li>`;
+                }
+            }
+            const from = new Date(yearElement["range"][0]).toISOString().split('T')[0];
+            const to = new Date(yearElement["range"][1]).toISOString().split('T')[0];
+            const keywords = `"${year}"`;
+            const variables = {
+                "dateModified": dateModified,
+                "year": year,
+                "keywords": keywords,
+                "currentYear": currentDate.getFullYear(),
+                "distributions": JSON.stringify(distributions, null, 2),
+                "endpoints": endpoints,
+                "temporalCoverage": from + "/" + to
+            }
+            const formattedYearIndex = htmlPreprocessor(data, variables);
+            const yearPagePath = outputDir + "v" + apiVersion + "/" + year + "/index.html";
+            fs.writeFile(yearPagePath, formattedYearIndex, err => {
+                if (err) {
+                    console.error(err);
+                }
+            });
+        }
+    });
+}
+
 function getJsonFile(path) {
     return JSON.parse(fs.readFileSync(path));
 }
@@ -493,6 +584,25 @@ const index = async () => {
 
         // Pollsters
         await writeFromConfig("pollsters");
+
+        // Check if output exists
+        if (!fs.existsSync(outputDir)) {
+            fs.mkdirSync(outputDir);
+        }
+        // Add CNAME
+        fs.writeFile(outputDir + "CNAME", "api.pollsteraudit.ca", err => {
+            if (err) {
+                console.error(err);
+            }
+        });
+        // Add api landing page - index.html
+        createLandingPages(index);
+        // Add stylesheet used by api pages
+        fs.copyFile("./src/website/style.css", outputDir + "style.css", (err) => {
+            if (err) {
+                console.error(err);
+            }
+        });
     } catch (error) {
         console.error('An error has occurred:', error);
     }

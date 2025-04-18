@@ -4,7 +4,6 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "api": "node src/index.js & node src/api.js",
     "validate": "node src/validateConfig.js"
   },
   "type": "commonjs",
