@@ -111,6 +111,7 @@ function cleanPollingFirmName(item) {
 function processTable($, table, headings, citations, ignoreColumns) {
     const idToUrlMap = {};
     const citationMap = {};
+    const directCitationMap = {};
 
     // Find references early
     const citationKey = "" + headings.indexOf("Citation");
@@ -127,10 +128,14 @@ function processTable($, table, headings, citations, ignoreColumns) {
                         const href = $citation('a').first().attr('href');
                         if (href) {
                             const citationId = href.replace(/^#/, '');
-                            if (!(citationId in citationMap)) {
-                                citationMap[citationId] = [];
+                            if (href === citationId) { // Not using wikipedia citations, using direct link
+                                directCitationMap[i] = href;
+                            } else {
+                                if (!(citationId in citationMap)) {
+                                    citationMap[citationId] = [];
+                                }
+                                citationMap[citationId].push(i);
                             }
-                            citationMap[citationId].push(i);
                         }
                     }
                 }
@@ -218,6 +223,9 @@ function processTable($, table, headings, citations, ignoreColumns) {
                     const urlData = idToUrlMap[i];
                     item[j] = urlData[0]; // Change row from citation reference to link
                     citations.push(createCitation(urlData[0], urlData[1], urlData[2]));
+                } else if (i in directCitationMap) {
+                    item[j] = directCitationMap[i];
+                    citations.push(createCitation(directCitationMap[i], null, null));
                 } else {
                     item[j] = "";
                 }
