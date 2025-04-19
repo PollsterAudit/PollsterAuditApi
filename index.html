@@ -22,7 +22,7 @@
         {
             "@context":"https://schema.org/",
             "@type":"DataCatalog",
-            "name":"Canadian Electoral Opinion Polling Data Catalog",
+            "name":"Canadian Electoral Opinion Polling",
             "alternateName": "Pollster Audit API",
             "description":"Canadian Electoral Opinion Polling Data since opinion polling started in 1942",
             "url":"https://api.pollsteraudit.ca/",
@@ -32,7 +32,12 @@
                 "electoral opinion polling",
                 "political polling",
                 "polling firm",
-                "pollster audit"
+                "pollster audit",
+                "Public Opinion Polls",
+                "Public Opinion Poll",
+                "Elections and Politics",
+                "Federal election",
+                "Political party"
             ],
             "isAccessibleForFree" : true,
             "isFamilyFriendly": true,
@@ -45,7 +50,7 @@
                 "@type": "Country",
                 "name": "Canada"
             },
-            "creator":{
+            "publisher":{
                 "@type":"Organization",
                 "url": "https://pollsteraudit.ca/",
                 "name":"Pollster Audit",
@@ -59,32 +64,110 @@
                 }
             },
             "hasPart": [
-  "https://api.pollsteraudit.ca/v1/1945/",
-  "https://api.pollsteraudit.ca/v1/1949/",
-  "https://api.pollsteraudit.ca/v1/1953/",
-  "https://api.pollsteraudit.ca/v1/1957/",
-  "https://api.pollsteraudit.ca/v1/1958/",
-  "https://api.pollsteraudit.ca/v1/1962/",
-  "https://api.pollsteraudit.ca/v1/1963/",
-  "https://api.pollsteraudit.ca/v1/1965/",
-  "https://api.pollsteraudit.ca/v1/1968/",
-  "https://api.pollsteraudit.ca/v1/1972/",
-  "https://api.pollsteraudit.ca/v1/1974/",
-  "https://api.pollsteraudit.ca/v1/1979/",
-  "https://api.pollsteraudit.ca/v1/1980/",
-  "https://api.pollsteraudit.ca/v1/1984/",
-  "https://api.pollsteraudit.ca/v1/1988/",
-  "https://api.pollsteraudit.ca/v1/1993/",
-  "https://api.pollsteraudit.ca/v1/1997/",
-  "https://api.pollsteraudit.ca/v1/2000/",
-  "https://api.pollsteraudit.ca/v1/2004/",
-  "https://api.pollsteraudit.ca/v1/2006/",
-  "https://api.pollsteraudit.ca/v1/2008/",
-  "https://api.pollsteraudit.ca/v1/2011/",
-  "https://api.pollsteraudit.ca/v1/2015/",
-  "https://api.pollsteraudit.ca/v1/2019/",
-  "https://api.pollsteraudit.ca/v1/2021/",
-  "https://api.pollsteraudit.ca/v1/2025/"
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1945/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1949/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1953/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1957/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1958/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1962/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1963/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1965/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1968/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1972/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1974/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1979/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1980/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1984/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1988/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1993/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/1997/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2000/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2004/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2006/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2008/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2011/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2015/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2019/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2021/"
+  },
+  {
+    "@type": "Dataset",
+    "url": "https://api.pollsteraudit.ca/v1/2025/"
+  }
 ]
         }
     </script>
@@ -131,7 +214,7 @@
     <li>
         <strong><code>/v1/pollsters.json</code></strong><br/>
         <a href="https://api.pollsteraudit.ca/v1/pollsters.json" target="_blank">View JSON</a><br/>
-        <small>Information about most pollsters found within the dataset.</small>
+        <small>Information about all pollsters found within the dataset.</small>
     </li>
 </ul>
 <footer>
