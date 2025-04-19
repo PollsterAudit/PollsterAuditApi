@@ -133,14 +133,6 @@
   ],
   "pollsters": [
     {
-      "name": "Abacus Data",
-      "active": true,
-      "canadian": true,
-      "cric": true,
-      "website": "https://abacusdata.ca/",
-      "wikipedia": "https://en.wikipedia.org/wiki/Abacus_Data"
-    },
-    {
       "name": "Angus Reid",
       "active": true,
       "canadian": true,
