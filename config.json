@@ -402,15 +402,6 @@
       "website": "https://www.mqoresearch.com/"
     },
     {
-      "name": "Nanos",
-      "active": true,
-      "canadian": true,
-      "cric": true,
-      "alternatives": ["Nanos Research Corporation", "Nanos Research", "SES Research", "SES"],
-      "website": "https://nanos.co/",
-      "wikipedia": "https://en.wikipedia.org/wiki/Nanos_Research"
-    },
-    {
       "name": "Navigator Ltd",
       "active": true,
       "canadian": true,
