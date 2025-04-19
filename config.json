@@ -181,12 +181,12 @@
       "wikipedia": "https://en.wikipedia.org/wiki/CROP_(polling_firm)"
     },
     {
-      "name": "Decima Research",
+      "name": "Decima",
       "active": false,
       "canadian": true,
       "cric": false,
-      "alternatives": ["Harris-Decima"],
-      "website": "https://www.crop.ca/",
+      "alternatives": ["Harris-Decima", "Decima Research"],
+      "website": "https://web.archive.org/web/20050901171703/http://www.decima.com/",
       "wikipedia": "https://en.wikipedia.org/wiki/Decima_Research"
     },
     {
@@ -199,19 +199,19 @@
       "wikipedia": "https://en.wikipedia.org/wiki/Navigator_Ltd"
     },
     {
-      "name": "Earnscliffe Strategy Group",
+      "name": "Earnscliffe",
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["Earnscliffe"],
+      "alternatives": ["Earnscliffe Strategy Group"],
       "website": "https://earnscliffe.ca"
     },
     {
-      "name": "EKOS Research Associates",
+      "name": "Ekos",
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["EKOS"],
+      "alternatives": ["EKOS Research Associates"],
       "website": "https://www.ekospolitics.com/",
       "wikipedia": "https://en.wikipedia.org/wiki/Ekos_Research_Associates"
     },
@@ -241,11 +241,11 @@
       "wikipedia": "https://en.wikipedia.org/wiki/Gallup,_Inc."
     },
     {
-      "name": "Innovative Research Group",
+      "name": "Innovative Research",
       "active": true,
       "canadian": true,
       "cric": false,
-      "alternatives": ["Innovative Research"],
+      "alternatives": ["Innovative Research Group"],
       "website": "https://innovativeresearch.ca/"
     },
     {
@@ -262,7 +262,7 @@
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["Leger Marketing", "Léger Marketing"],
+      "alternatives": ["Leger Marketing"],
       "website": "https://leger360.com/",
       "wikipedia": "https://en.wikipedia.org/wiki/L%C3%A9ger_(company)"
     },
@@ -289,11 +289,11 @@
       "website": "https://www.mqoresearch.com/"
     },
     {
-      "name": "Nanos Research Corporation",
+      "name": "Nanos",
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["Nanos", "Nanos Research", "SES Research"],
+      "alternatives": ["Nanos Research Corporation", "Nanos Research", "SES Research"],
       "website": "https://nanos.co/",
       "wikipedia": "https://en.wikipedia.org/wiki/Nanos_Research"
     },
@@ -312,20 +312,20 @@
       "website": "https://plurielresearch.com/"
     },
     {
-      "name": "Pollara Strategic Insights",
+      "name": "Pollara",
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["Pollara"],
+      "alternatives": ["Pollara Strategic Insights"],
       "website": "https://pallas-data.ca/",
       "wikipedia": "https://en.wikipedia.org/wiki/Pollara"
     },
     {
-      "name": "Praxicus Public Strategies",
+      "name": "Praxicus",
       "active": true,
       "canadian": true,
       "cric": false,
-      "alternatives": ["Praxicus"]
+      "alternatives": ["Praxicus Public Strategies"]
     },
     {
       "name": "Relay Strategies",
@@ -357,19 +357,19 @@
       "website": "https://sparkadvocacy.ca/"
     },
     {
-      "name": "Strategic Counsel",
+      "name": "Counsel",
       "active": true,
       "canadian": true,
       "cric": true,
-      "alternatives": ["Counsel"],
+      "alternatives": ["Strategic Counsel"],
       "website": "https://www.thestrategiccounsel.com/"
     },
     {
-      "name": "TNS Canada",
+      "name": "TNS",
       "active": false,
       "canadian": true,
       "cric": false,
-      "alternatives": ["TNS"]
+      "alternatives": ["TNS Canada"]
     },
     {
       "name": "YouGov",
