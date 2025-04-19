@@ -572,9 +572,7 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
                 knownPollsters.push(untaggedPollster);
             }
         }
-        for (let pollster of toRemove) {
-            knownUntaggedPollsters.remove(pollster);
-        }
+        knownUntaggedPollsters.filter(item => !toRemove.includes(item));
     } else {
         knownUntaggedPollsters = [];
     }
