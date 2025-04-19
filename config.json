@@ -157,6 +157,12 @@
       "website": "https://www.askingcanadians.ca/"
     },
     {
+      "name": "Canadian Facts",
+      "active": false,
+      "canadian": true,
+      "cric": false
+    },
+    {
       "name": "Carleton",
       "active": true,
       "canadian": true,
@@ -387,13 +393,6 @@
       "cric": false,
       "alternatives": ["dart/maru"],
       "website": "https://www.marugroup.net/"
-    },
-    {
-      "name": "MQO Research",
-      "active": true,
-      "canadian": true,
-      "cric": true,
-      "website": "https://www.mqoresearch.com/"
     },
     {
       "name": "Nanos",
