@@ -25,9 +25,7 @@ Main endpoints:
 - [`/v1/index.json`](https://api.pollsteraudit.ca/v1/index.json) – Index of all available polling data
 - [`/v1/citations.json`](https://api.pollsteraudit.ca/v1/citations.json) – Contains all citations used within this dataset
 - [`/v1/parties.json`](https://api.pollsteraudit.ca/v1/parties.json) – Contains information about all the parties found within the dataset
-- [`/v1/pollsters.json`](https://api.pollsteraudit.ca/v1/pollsters.json) – Contains information about most* pollsters found within the dataset
-
-\* All pollsters will be included soon
+- [`/v1/pollsters.json`](https://api.pollsteraudit.ca/v1/pollsters.json) – Contains information about all pollsters found within the dataset
 
 The API is automatically regenerated **every hour** via [GitHub Actions](https://github.com/PollsterAudit/PollsterAuditApi/actions), and served from the [`api` branch](https://github.com/PollsterAudit/PollsterAuditApi/tree/api).
 

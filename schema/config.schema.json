@@ -123,6 +123,41 @@
             "items": {
               "type": "string"
             }
+          },
+          "possibleBias": {
+            "description": "List of possible biases which might impact this pollsters results",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "citation",
+                "description"
+              ],
+              "dependencies": {
+                "party": ["relation"],
+                "relation": ["party"]
+              },
+              "properties": {
+                "citation": {
+                  "description": "Link to the citation",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": {
+                  "description": "Describe why this citation is a bias",
+                  "type": "string"
+                },
+                "party": {
+                  "description": "Set if this is a bias against a specific party",
+                  "type": "string"
+                },
+                "relation": {
+                  "description": "Specifies how this pollster would be biased towards the party",
+                  "type": "string",
+                  "enum": ["positive", "negative"]
+                }
+              }
+            }
           }
         }
       }
