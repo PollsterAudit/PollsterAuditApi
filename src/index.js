@@ -464,7 +464,10 @@ function createLandingPages(index) {
         let yearEndpoints = "";
         for (let year in index) {
             const pageUrl = baseUrl + "v" + apiVersion + "/" + year + "/";
-            parts.push(pageUrl);
+            parts.push({
+                "@type":"Dataset",
+                "url": pageUrl,
+            });
             yearEndpoints += `<li><strong>${year}</strong><br/>` +
                 `<a href="${pageUrl}">View Page</a><br/>` +
                 `<small>Dataset of all opinion polling done for the ${year} election</small></li>`;
