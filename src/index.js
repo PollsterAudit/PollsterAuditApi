@@ -564,8 +564,16 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
     }
     // Add already known untagged pollsters
     if (knownUntaggedPollsters != null) {
+        const toRemove = [];
         for (let untaggedPollster of knownUntaggedPollsters) {
-            knownPollsters.push(normalizePollingFirmName(untaggedPollster));
+            if (knownPollsters.includes(untaggedPollster)) {
+                toRemove.push(untaggedPollster);
+            } else {
+                knownPollsters.push(untaggedPollster);
+            }
+        }
+        for (let pollster of toRemove) {
+            knownUntaggedPollsters.remove(pollster);
         }
     } else {
         knownUntaggedPollsters = [];
