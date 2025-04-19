@@ -602,11 +602,10 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
                 }
             ]
         };
-        axios.post(newPollsterDiscordWebhook, {
+        axios.post(newPollsterDiscordWebhook, params, {
             headers: {
-                'Content-type': 'application/json'
-            },
-            params: params
+                'Content-Type': 'application/json'
+            }
         }).catch(function (error) {
             console.error(error);
         });
