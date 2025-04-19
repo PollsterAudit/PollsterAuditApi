@@ -568,6 +568,7 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
         for (let untaggedPollster of knownUntaggedPollsters) {
             if (knownPollsters.includes(untaggedPollster)) {
                 toRemove.push(untaggedPollster);
+                pollsters.filter(p => p !== untaggedPollster);
             } else {
                 knownPollsters.push(untaggedPollster);
             }
@@ -582,8 +583,11 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
     for (let pollster of pollsters) {
         if (!knownPollsters.includes(pollster)) {
             // Add pollster
-            newUntaggedPollsters.push(pollster);
-            knownUntaggedPollsters.push(pollster);
+            if (knownUntaggedPollsters.includes(pollster)) {
+                newUntaggedPollsters.push(pollster);
+            } else {
+                knownUntaggedPollsters.push(pollster);
+            }
             needsToSave = true;
             console.log("Unknown pollster: " + pollster);
         }
