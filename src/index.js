@@ -614,7 +614,7 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
         const fileName = 'untagged-pollsters.json';
         const directory = outputDir + "v" + apiVersion + "/";
 
-        const data = JSON.stringify(knownPollsters);
+        const data = JSON.stringify(knownUntaggedPollsters);
         if (!fs.existsSync(directory)) {
             fs.mkdirSync(directory, { recursive: true });
         }
