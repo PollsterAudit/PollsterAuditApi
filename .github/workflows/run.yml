@@ -11,6 +11,9 @@ on:
 permissions:
   contents: write
 
+env:
+  NEW_POLLSTER_DISCORD_WEBHOOK: ${{ secrets.NEW_POLLSTER_DISCORD_WEBHOOK }}
+
 jobs:
   publish:
     permissions:

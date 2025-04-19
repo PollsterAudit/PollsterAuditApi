@@ -5,6 +5,8 @@ const fs = require('node:fs');
 
 const config = require('../config.json');
 
+const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
+
 const apiVersion = 1;
 const outputDir = "./output/";
 const apiDir = "./api/";
@@ -109,7 +111,11 @@ function cleanPollingFirmName(item) {
     return item.replace(regex, `$1`);
 }
 
-function processTable($, table, headings, citations, ignoreColumns) {
+function normalizePollingFirmName(name) {
+    return name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+}
+
+function processTable($, table, headings, citations, pollsters, ignoreColumns) {
     const idToUrlMap = {};
     const citationMap = {};
     const directCitationMap = {};
@@ -211,7 +217,12 @@ function processTable($, table, headings, citations, ignoreColumns) {
             const x = j + innerSkipped;
             const heading = headings[j];
             if (heading === "PollingFirm") {
-                item[j] = cleanPollingFirmName(pollingFirm);
+                const cleanFirmName = cleanPollingFirmName(pollingFirm);
+                item[j] = cleanFirmName;
+                const normalizedFirmName = normalizePollingFirmName(cleanFirmName);
+                if (!pollsters.includes(normalizedFirmName)) {
+                    pollsters.push(normalizedFirmName);
+                }
             } else if (heading === "Date") {
                 const date = row["" + x];
                 if (date === "") {
@@ -251,7 +262,8 @@ function htmlPreprocessor(html, variables) {
     });
 }
 
-async function getWikipediaSection(page, year, sectionId, sectionName, options, manualTimes, index, citations) {
+async function getWikipediaSection(page, year, sectionId, sectionName, options,
+                                   manualTimes, index, citations, pollsters) {
     try {
         options["forceIndexAsNumber"] = true;
         options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
@@ -264,6 +276,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options, 
             table,
             headings,
             citations,
+            pollsters,
             ("ignoreColumns" in options ? options.ignoreColumns : [])
         );
         if (processedTable.length === 0) {
@@ -416,7 +429,7 @@ async function writeFromConfig(key) {
     });
 }
 
-async function processWikipediaSource(page, year, source, chunkSource, index, citations) {
+async function processWikipediaSource(page, year, source, chunkSource, index, citations, pollsters) {
     const sectionTables = chunkSource != null && "sectionTables" in chunkSource ?
         chunkSource["sectionTables"] : source["sectionTables"];
     const options = chunkSource != null && "options" in chunkSource ?
@@ -427,11 +440,11 @@ async function processWikipediaSource(page, year, source, chunkSource, index, ci
     if (!Array.isArray(sectionTables)) {
         for (let sectionId in sectionTables) {
             await getWikipediaSection(page, year, sectionId, sectionTables[sectionId], options, manualTimes,
-                index, citations);
+                index, citations, pollsters);
         }
     } else {
         for (const section of sectionTables) {
-            await getWikipediaSection(page, year, section, section, options, manualTimes, index, citations);
+            await getWikipediaSection(page, year, section, section, options, manualTimes, index, citations, pollsters);
         }
     }
 }
@@ -538,6 +551,80 @@ function createLandingPages(index) {
     });
 }
 
+function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPollsters) {
+    const knownPollsters = ["voting results", "market opinion research"];
+    // Populate known pollsters
+    for (let pollster of configPollsters) {
+        knownPollsters.push(normalizePollingFirmName(pollster.name));
+        if ("alternatives" in pollster) {
+            for (let alternative of pollster["alternatives"]) {
+                knownPollsters.push(normalizePollingFirmName(alternative));
+            }
+        }
+    }
+    // Add already known untagged pollsters
+    if (knownUntaggedPollsters != null) {
+        for (let untaggedPollster of knownUntaggedPollsters) {
+            knownPollsters.push(normalizePollingFirmName(untaggedPollster));
+        }
+    }
+    const newUntaggedPollsters = [];
+    let needsToSave = false;
+    // Check which pollsters are untagged
+    for (let pollster of pollsters) {
+        if (!knownPollsters.includes(pollster)) {
+            // Add pollster
+            newUntaggedPollsters.push(pollster);
+            knownUntaggedPollsters.push(pollster);
+            needsToSave = true;
+            console.log("Unknown pollster: " + pollster);
+        }
+    }
+    if (newUntaggedPollsters.length > 0) {
+        let description = "";
+        for (let pollster of newUntaggedPollsters) {
+            if (description !== "") {
+                description += "\n";
+            }
+            description += "• " + pollster
+        }
+        const params = {
+            username: "Auditor",
+            avatar_url: "https://pollsteraudit.ca/assets/favicon/PollsterAudit_Logo.png",
+            content: "<@&1363180448825606234>",
+            embeds: [
+                {
+                    "title": "New Pollster" + (newUntaggedPollsters.length > 1 ? "s" : ""),
+                    "color": 14022436,
+                    "description": description,
+                }
+            ]
+        };
+        axios.post(newPollsterDiscordWebhook, {
+            headers: {
+                'Content-type': 'application/json'
+            },
+            params: params
+        }).catch(function (error) {
+            console.error(error);
+        });
+    }
+    if (needsToSave) {
+        const fileName = 'untagged-pollsters.json';
+        const directory = outputDir + "v" + apiVersion + "/";
+
+        const data = JSON.stringify(knownPollsters);
+        if (!fs.existsSync(directory)) {
+            fs.mkdirSync(directory, { recursive: true });
+        }
+        fs.writeFile(directory + fileName, data, err => {
+            if (err) {
+                console.error(err);
+            }
+        });
+    }
+}
+
 function getJsonFile(path) {
     return JSON.parse(fs.readFileSync(path));
 }
@@ -549,6 +636,7 @@ const index = async () => {
         const sources = config["sources"];
         const index = {};
         const citations = {};
+        const pollsters = [];
 
         const apiIndex = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/index.json") : null;
         const apiCitations = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/citations.json") : null;
@@ -579,10 +667,10 @@ const index = async () => {
             const page = await getWikipediaPage(url);
             if ("chunks" in source) {
                 for (const chunk of source["chunks"]) {
-                    await processWikipediaSource(page, year, source, chunk, index, innerCitations);
+                    await processWikipediaSource(page, year, source, chunk, index, innerCitations, pollsters);
                 }
             } else {
-                await processWikipediaSource(page, year, source, null, index, innerCitations);
+                await processWikipediaSource(page, year, source, null, index, innerCitations, pollsters);
             }
         }
 
@@ -622,6 +710,13 @@ const index = async () => {
                 console.error(err);
             }
         });
+
+        const untaggedPollstersPath = apiDir + "v" + apiVersion + "/untagged-pollsters.json";
+        identifyUntaggedPollsters(
+            pollsters,
+            config["pollsters"],
+            hasApiDir && fs.existsSync(untaggedPollstersPath) ? getJsonFile(untaggedPollstersPath) : null
+        );
     } catch (error) {
         console.error('An error has occurred:', error);
     }
