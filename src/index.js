@@ -562,6 +562,9 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
             }
         }
     }
+    if (knownUntaggedPollsters === null) {
+        knownUntaggedPollsters = [];
+    }
     const newUntaggedList = [];
     const newUntaggedPollsters = [];
     // Check which pollsters are untagged
