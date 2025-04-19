@@ -567,6 +567,8 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
         for (let untaggedPollster of knownUntaggedPollsters) {
             knownPollsters.push(normalizePollingFirmName(untaggedPollster));
         }
+    } else {
+        knownUntaggedPollsters = [];
     }
     const newUntaggedPollsters = [];
     let needsToSave = false;

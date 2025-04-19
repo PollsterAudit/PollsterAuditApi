@@ -395,6 +395,13 @@
       "website": "https://www.marugroup.net/"
     },
     {
+      "name": "MQO Research",
+      "active": true,
+      "canadian": true,
+      "cric": true,
+      "website": "https://www.mqoresearch.com/"
+    },
+    {
       "name": "Nanos",
       "active": true,
       "canadian": true,
