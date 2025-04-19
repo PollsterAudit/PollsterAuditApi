@@ -562,33 +562,17 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
             }
         }
     }
-    // Add already known untagged pollsters
-    if (knownUntaggedPollsters != null) {
-        const toRemove = [];
-        for (let untaggedPollster of knownUntaggedPollsters) {
-            if (knownPollsters.includes(untaggedPollster)) {
-                toRemove.push(untaggedPollster);
-                pollsters.filter(p => p !== untaggedPollster);
-            } else {
-                knownPollsters.push(untaggedPollster);
-            }
-        }
-        knownUntaggedPollsters.filter(item => !toRemove.includes(item));
-    } else {
-        knownUntaggedPollsters = [];
-    }
+    const newUntaggedList = [];
     const newUntaggedPollsters = [];
-    let needsToSave = false;
     // Check which pollsters are untagged
     for (let pollster of pollsters) {
         if (!knownPollsters.includes(pollster)) {
             // Add pollster
-            if (knownUntaggedPollsters.includes(pollster)) {
+            newUntaggedList.push(pollster);
+            if (!knownUntaggedPollsters.includes(pollster)) {
                 newUntaggedPollsters.push(pollster);
-            } else {
                 knownUntaggedPollsters.push(pollster);
             }
-            needsToSave = true;
             console.log("Unknown pollster: " + pollster);
         }
     }
@@ -620,11 +604,11 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
             console.error(error);
         });
     }
-    if (needsToSave) {
+    if (newUntaggedList.length > 0) {
         const fileName = 'untagged-pollsters.json';
         const directory = outputDir + "v" + apiVersion + "/";
 
-        const data = JSON.stringify(knownUntaggedPollsters);
+        const data = JSON.stringify(newUntaggedList);
         if (!fs.existsSync(directory)) {
             fs.mkdirSync(directory, { recursive: true });
         }
