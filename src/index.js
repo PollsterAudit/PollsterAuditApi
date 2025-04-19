@@ -104,6 +104,7 @@ function cleanPollingFirmName(item) {
     if (item == null) {
         return null;
     }
+    // Removes citations - E.x. Ekos[3]
     const regex = /(.*?)(?:\[[a-zA-Z0-9]{0,2}\])?/gm;
     return item.replace(regex, `$1`);
 }
@@ -183,7 +184,8 @@ function processTable($, table, headings, citations, ignoreColumns) {
             if (key === citationKey) {
                 continue;
             }
-            row[key] = cheerio.load(row[key]).text();
+            let $row = cheerio.load("<div>" + row[key] + "</div>");
+            row[key] = $row('div').prop('innerText');
         }
 
         const pollingFirm = row["" + headings.indexOf("PollingFirm")];
