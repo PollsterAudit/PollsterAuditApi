@@ -133,6 +133,14 @@
   ],
   "pollsters": [
     {
+      "name": "Abacus Data",
+      "active": true,
+      "canadian": true,
+      "cric": true,
+      "website": "https://abacusdata.ca/",
+      "wikipedia": "https://en.wikipedia.org/wiki/Abacus_Data"
+    },
+    {
       "name": "Angus Reid",
       "active": true,
       "canadian": true,
@@ -392,6 +400,15 @@
       "canadian": true,
       "cric": true,
       "website": "https://www.mqoresearch.com/"
+    },
+    {
+      "name": "Nanos",
+      "active": true,
+      "canadian": true,
+      "cric": true,
+      "alternatives": ["Nanos Research Corporation", "Nanos Research", "SES Research", "SES"],
+      "website": "https://nanos.co/",
+      "wikipedia": "https://en.wikipedia.org/wiki/Nanos_Research"
     },
     {
       "name": "Navigator Ltd",
