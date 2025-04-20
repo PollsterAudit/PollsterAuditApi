@@ -171,6 +171,28 @@ export class WikipediaResolver extends SourceResolver {
         }
     }
 
+    applyFinalChanges() {
+        for (let year in this.context.index) {
+            let yearElement = this.context.index[year];
+            if ("range" in yearElement) {
+                continue;
+            }
+            let from = Number.MAX_SAFE_INTEGER;
+            let to = Number.MIN_SAFE_INTEGER;
+            for (let period in yearElement) {
+                const periodElement = yearElement[period];
+                const range = periodElement["range"];
+                if (range[0] < from) {
+                    from = range[0];
+                }
+                if (range[1] > to) {
+                    to = range[1];
+                }
+            }
+            yearElement["range"] = [from, to];
+        }
+    }
+
     async getTableFromWikipediaPage($, headerName, options) {
         // Find the header element that contains the name
         const checkHeaderName = headerName.trim().toUpperCase();

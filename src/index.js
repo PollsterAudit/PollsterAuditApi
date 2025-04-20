@@ -17,28 +17,6 @@ const apiDir = "./api/";
 const apiDataDir = apiDir + "_data/";
 const baseUrl = "https://api.pollsteraudit.ca/";
 
-function applyRangesToIndex(index) {
-    for (let year in index) {
-        let yearElement = index[year];
-        if ("range" in yearElement) {
-            continue;
-        }
-        let from = Number.MAX_SAFE_INTEGER;
-        let to = Number.MIN_SAFE_INTEGER;
-        for (let period in yearElement) {
-            const periodElement = yearElement[period];
-            const range = periodElement["range"];
-            if (range[0] < from) {
-                from = range[0];
-            }
-            if (range[1] > to) {
-                to = range[1];
-            }
-        }
-        yearElement["range"] = [from, to];
-    }
-}
-
 function identifyUntaggedPollsters(directory, pollsterIndex, knownUntaggedPollsters) {
     const knownPollsters = ["voting results", "market opinion research"];
     // Populate known pollsters
@@ -139,7 +117,6 @@ const index = async () => {
                 await resolver.resolve(sources);
             }
         }
-        applyRangesToIndex(index);
 
         // Write data to api
         writeJsonToFile(mainDirectory, "index", index, true);

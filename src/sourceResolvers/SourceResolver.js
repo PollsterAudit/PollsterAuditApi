@@ -138,6 +138,11 @@ export class SourceResolver {
     }
 
     /**
+     * Apply the final changes before this resolver finishes.
+     */
+    applyFinalChanges() {}
+
+    /**
      * Checks if this resolver can resolve any of these sources.
      */
     canResolve(sources) {
@@ -169,5 +174,6 @@ export class SourceResolver {
                 });
             });
         }
+        this.applyFinalChanges();
     }
 }
