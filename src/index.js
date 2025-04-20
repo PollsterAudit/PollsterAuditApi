@@ -1,13 +1,15 @@
-const tabletojson = require('tabletojson').Tabletojson;
-const axios = require('axios');
-const cheerio = require('cheerio');
-const fs = require('node:fs');
-
-const parties = require('../config/parties.json')["parties"];
-const pollsters = require('../config/pollsters.json')["pollsters"];
-const sources = require('../config/sources.json')["sources"];
+import { Tabletojson as tabletojson } from 'tabletojson';
+import axios from 'axios';
+import * as cheerio from 'cheerio';
+import fs from 'node:fs';
+import { loadJson, writeJsonToFile, writeToFile, copyFile, getJsonFile, createCitation, setupCitations,
+    parseCleanFloat, cleanPollingFirmName, normalizePollingFirmName } from './utils.mjs';
 
 const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
+
+const parties = loadJson('../config/parties.json')["parties"];
+const pollsters = loadJson('../config/pollsters.json')["pollsters"];
+const sources = loadJson('../config/sources.json')["sources"];
 
 const apiVersion = 1;
 const outputDir = "./output/";
@@ -20,17 +22,6 @@ async function getWikipediaPage(url) {
         method: "GET",
         url: url
     });
-}
-
-function createCitation(url, date, sourceExt = null) {
-    const citation = {
-        "url": url,
-        "date": date
-    };
-    if (sourceExt) {
-        citation["sourceExt"] = sourceExt;
-    }
-    return citation;
 }
 
 function getWikipediaDateAndSourceExt($ref) {
@@ -94,28 +85,6 @@ async function getTableFromWikipediaPage($, headerName, options) {
         console.log('Header not found.');
     }
     return null;
-}
-
-// parseFloat() with some extra cleaning
-function parseCleanFloat(item) {
-    if (item == null) {
-        return null;
-    }
-    const regex = /^±?(\d+\.?\d*),?(\d*\.?\d*),?(\d*\.?\d*)(?: .*|,)?$/gm;
-    return parseFloat(item.replace(regex, `$1$2$3`));
-}
-
-function cleanPollingFirmName(item) {
-    if (item == null) {
-        return null;
-    }
-    // Removes citations - E.x. Ekos[3]
-    const regex = /(.*?)(?:\[[a-zA-Z0-9]{0,2}\])?/gm;
-    return item.replace(regex, `$1`);
-}
-
-function normalizePollingFirmName(name) {
-    return name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 }
 
 function processTable($, table, headings, citations, pollsterIndex, ignoreColumns) {
@@ -267,14 +236,15 @@ function htmlPreprocessor(html, variables) {
 
 async function getWikipediaSection(page, year, sectionId, sectionName, options,
                                    manualTimes, index, citations, pollsterIndex) {
-    try {
-        options["forceIndexAsNumber"] = true;
-        options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
+    options["forceIndexAsNumber"] = true;
+    options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
 
-        const headings = options["headings"];
+    const headings = options["headings"];
+    let processedTable;
+    try {
         const $ = cheerio.load(page.data);
         const table = await getTableFromWikipediaPage($, sectionId, options);
-        const processedTable = processTable(
+        processedTable = processTable(
             $,
             table,
             headings,
@@ -282,11 +252,14 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options,
             pollsterIndex,
             ("ignoreColumns" in options ? options.ignoreColumns : [])
         );
-        if (processedTable.length === 0) {
-            console.error(`Error fetching tables for year ${year} with sectionId ${sectionId}!`);
-            return;
-        }
-
+    } catch (error) {
+        console.log("Error fetching/processing tables! - " + year + " - " + sectionId);
+        throw error;
+    }
+    if (processedTable.length === 0) {
+        throw new Error(`Error fetching tables for year ${year} with sectionId ${sectionId}! - no tables!`);
+    }
+    try {
         const dateIndex = headings.indexOf("Date");
         const processedTables = {};
         const processedTableRanges = {};
@@ -342,14 +315,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options,
             const id = tableName.toLowerCase().replace(" ", "_");
             const fileName = id + '.json';
             const directory = outputDir + "v" + apiVersion + "/" + year + "/";
-            if (!fs.existsSync(directory)) {
-                fs.mkdirSync(directory, {recursive: true});
-            }
-            fs.writeFile(directory + fileName, data, err => {
-                if (err) {
-                    console.error(err);
-                }
-            });
+            writeToFile(directory, fileName, data);
             if (!index[year]) {
                 index[year] = {};
             }
@@ -360,15 +326,12 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options,
             };
         }
     } catch (error) {
-        console.error('Error fetching tables:', error);
+        console.log("Error processing table data!");
+        throw error;
     }
 }
 
-async function writeIndex(index) {
-    console.log("Writing Index");
-    const fileName = 'index.json';
-    const directory = outputDir + "v" + apiVersion + "/";
-
+function applyRangesToIndex(index) {
     for (let year in index) {
         let yearElement = index[year];
         if ("range" in yearElement) {
@@ -388,48 +351,6 @@ async function writeIndex(index) {
         }
         yearElement["range"] = [from, to];
     }
-
-    const data = JSON.stringify(index);
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-    }
-    fs.writeFile(directory + fileName, data, err => {
-        if (err) {
-            console.error(err);
-        }
-    });
-}
-
-async function writeCitations(citations) {
-    console.log("Writing Citations");
-    const fileName = 'citations.json';
-    const directory = outputDir + "v" + apiVersion + "/";
-
-    const data = JSON.stringify(citations);
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-    }
-    fs.writeFile(directory + fileName, data, err => {
-        if (err) {
-            console.error(err);
-        }
-    });
-}
-
-async function writeConfigToFile(key, data) {
-    console.log("Writing " + key);
-    const fileName = key + '.json';
-    const directory = outputDir + "v" + apiVersion + "/";
-
-    const strData = JSON.stringify(data);
-    if (!fs.existsSync(directory)) {
-        fs.mkdirSync(directory, { recursive: true });
-    }
-    fs.writeFile(directory + fileName, strData, err => {
-        if (err) {
-            console.error(err);
-        }
-    });
 }
 
 async function processWikipediaSource(page, year, source, chunkSource, index, citations, pollsterIndex) {
@@ -453,31 +374,13 @@ async function processWikipediaSource(page, year, source, chunkSource, index, ci
     }
 }
 
-function setupCitations(citations, year, source, sourceUrl) {
-    let innerCitations = citations;
-    if (!(year in innerCitations)) {
-        innerCitations[year] = {};
-    }
-    innerCitations = innerCitations[year];
-    if (!(source in innerCitations)) {
-        innerCitations[source] = {};
-    }
-    innerCitations = innerCitations[source];
-    if (!(sourceUrl in innerCitations)) {
-        innerCitations[sourceUrl] = {};
-    }
-    innerCitations[sourceUrl] = [];
-    return innerCitations[sourceUrl];
-}
-
-function createLandingPages(index) {
+function createLandingPages(directory, index) {
     const currentDate = new Date();
     const dateModified = currentDate.toISOString().split('T')[0];
     // Create Main landing page
     fs.readFile("./src/website/index.html", "utf8", (err, data) => {
         if (err) {
-            console.error(err);
-            return;
+            throw err;
         }
         const parts = [];
         let yearEndpoints = "";
@@ -497,18 +400,12 @@ function createLandingPages(index) {
             "yearEndpoint": yearEndpoints,
             "currentYear": currentDate.getFullYear()
         }
-        const formattedIndex = htmlPreprocessor(data, variables);
-        fs.writeFile(outputDir + "index.html", formattedIndex, err => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        writeToFile(outputDir, "index.html", htmlPreprocessor(data, variables));
     });
     // Create year landing pages
     fs.readFile("./src/website/year-index.html", "utf8", (err, data) => {
         if (err) {
-            console.error(err);
-            return;
+            throw err;
         }
         for (let year in index) {
             const distributions = [];
@@ -544,18 +441,12 @@ function createLandingPages(index) {
                 "endpoints": endpoints,
                 "temporalCoverage": from + "/" + to
             }
-            const formattedYearIndex = htmlPreprocessor(data, variables);
-            const yearPagePath = outputDir + "v" + apiVersion + "/" + year + "/index.html";
-            fs.writeFile(yearPagePath, formattedYearIndex, err => {
-                if (err) {
-                    console.error(err);
-                }
-            });
+            writeToFile(directory + year + "/", "index.html", htmlPreprocessor(data, variables));
         }
     });
 }
 
-function identifyUntaggedPollsters(pollsterIndex, knownUntaggedPollsters) {
+function identifyUntaggedPollsters(directory, pollsterIndex, knownUntaggedPollsters) {
     const knownPollsters = ["voting results", "market opinion research"];
     // Populate known pollsters
     for (let pollster of pollsters) {
@@ -608,27 +499,12 @@ function identifyUntaggedPollsters(pollsterIndex, knownUntaggedPollsters) {
                 'Content-Type': 'application/json'
             }
         }).catch(function (error) {
-            console.error(error);
+            throw error;
         });
     }
     if (newUntaggedList.length > 0) {
-        const fileName = 'untagged-pollsters.json';
-        const directory = outputDir + "v" + apiVersion + "/";
-
-        const data = JSON.stringify(newUntaggedList);
-        if (!fs.existsSync(directory)) {
-            fs.mkdirSync(directory, { recursive: true });
-        }
-        fs.writeFile(directory + fileName, data, err => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        writeJsonToFile(directory, "untagged-pollsters", newUntaggedList);
     }
-}
-
-function getJsonFile(path) {
-    return JSON.parse(fs.readFileSync(path));
 }
 
 const index = async () => {
@@ -638,6 +514,8 @@ const index = async () => {
         const index = {};
         const citations = {};
         const pollsterIndex = [];
+
+        const mainDirectory = outputDir + "v" + apiVersion + "/";
 
         const apiIndex = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/index.json") : null;
         const apiCitations = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/citations.json") : null;
@@ -650,12 +528,8 @@ const index = async () => {
                 const dir = apiDir + "v" + apiVersion + "/" + year;
 
                 if (fs.existsSync(dir) && year in apiIndex) {
-                    try {
-                        fs.cpSync(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true});
-                        console.log("Copied data for year " + year + " from last commit!");
-                    } catch (err) {
-                        console.error('Error copying files:', err);
-                    }
+                    fs.cpSync(dir, outputDir + "v" + apiVersion + "/" + year, {recursive: true});
+                    console.log("Copied data for year " + year + " from last commit!");
                     index[year] = apiIndex[year];
                     citations[year] = apiCitations[year];
                     continue; // Skip this year
@@ -663,9 +537,9 @@ const index = async () => {
             }
             const url = source["url"];
 
-            let innerCitations = setupCitations(citations, year, "wikipedia", url);
-
+            const innerCitations = setupCitations(citations, year, "wikipedia", url);
             const page = await getWikipediaPage(url);
+
             if ("chunks" in source) {
                 for (const chunk of source["chunks"]) {
                     await processWikipediaSource(page, year, source, chunk, index, innerCitations, pollsterIndex);
@@ -676,52 +550,42 @@ const index = async () => {
         }
 
         // Index
-        await writeIndex(index);
+        applyRangesToIndex(index);
+        writeJsonToFile(mainDirectory, "index", index, true);
 
         // Citations
-        await writeCitations(citations);
+        writeJsonToFile(mainDirectory, "citations", citations, true);
 
         // Parties
-        await writeConfigToFile("parties", parties);
+        writeJsonToFile(mainDirectory, "parties", parties, true);
 
         // Pollsters
-        await writeConfigToFile("pollsters", pollsters);
+        writeJsonToFile(mainDirectory, "pollsters", pollsters, true);
 
-        // Check if output exists
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir);
-        }
         // Add CNAME
-        fs.writeFile(outputDir + "CNAME", "api.pollsteraudit.ca", err => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        writeToFile(outputDir, "CNAME", "api.pollsteraudit.ca", true);
+
         // Add api landing page - index.html
-        createLandingPages(index);
+        createLandingPages(mainDirectory, index);
+
         // Add stylesheet used by api pages
-        fs.copyFile("./src/website/style.css", outputDir + "style.css", (err) => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        copyFile("./src/website/style.css", outputDir + "style.css");
+
         // Add empty robots.txt
-        fs.writeFile(outputDir + "robots.txt", "", err => {
-            if (err) {
-                console.error(err);
-            }
-        });
+        writeToFile(outputDir, "robots.txt", "", true);
 
         const untaggedPollstersPath = apiDataDir + "v" + apiVersion + "/untagged-pollsters.json";
         identifyUntaggedPollsters(
+            mainDirectory,
             pollsterIndex,
-            hasApiDir && fs.existsSync(untaggedPollstersPath) ? getJsonFile(untaggedPollstersPath) : null
+            hasApiDir ? getJsonFile(untaggedPollstersPath) : null
         );
     } catch (error) {
         console.error('An error has occurred:', error);
+        throw error;
     }
 }
 
 index()
     .then(() => console.log("Finished"))
-    .catch(err => console.log(err));
+    .catch(err => { throw err; });

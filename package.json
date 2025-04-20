@@ -6,7 +6,7 @@
     "start": "node src/index.js",
     "validate": "node src/validateConfigs.js"
   },
-  "type": "commonjs",
+  "type": "module",
   "keywords": [],
   "author": "FX Morin",
   "license": "MIT",
