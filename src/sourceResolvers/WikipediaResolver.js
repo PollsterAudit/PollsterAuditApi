@@ -36,13 +36,13 @@ export class WikipediaResolver extends SourceResolver {
         return source["url"];
     }
 
-    forEachChunk(source, chunkCallback) {
+    async forEachChunk(source, chunkCallback) {
         if ("chunks" in source) {
             for (const chunk of source["chunks"]) {
-                chunkCallback(chunk);
+                await chunkCallback(chunk);
             }
         } else {
-            chunkCallback(null);
+            await chunkCallback(null);
         }
     }
 

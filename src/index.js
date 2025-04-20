@@ -1,7 +1,8 @@
 import axios from 'axios';
 import fs from 'node:fs';
-import { loadJson, writeJsonToFile, writeToFile, copyFile, getJsonFile, normalizePollingFirmName } from './utils.mjs';
-import {WikipediaResolver} from "./sourceResolvers/WikipediaResolver.js";
+import { loadJson, writeJsonToFile, getJsonFile, normalizePollingFirmName } from './utils.mjs';
+import { WikipediaResolver } from "./sourceResolvers/WikipediaResolver.js";
+import { setupWebpages } from "./webpages/Webpages.js";
 
 const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
 
@@ -36,87 +37,6 @@ function applyRangesToIndex(index) {
         }
         yearElement["range"] = [from, to];
     }
-}
-
-function htmlPreprocessor(html, variables) {
-    const variableRegex = /{{(?<variableName>\w*?)}}/gm;
-    return html.replace(variableRegex, (match, variableName) => {
-        if (variableName in variables) {
-            return variables[variableName];
-        }
-    });
-}
-
-function createLandingPages(directory, index) {
-    const currentDate = new Date();
-    const dateModified = currentDate.toISOString().split('T')[0];
-    // Create Main landing page
-    fs.readFile(websiteDir + "index.html", "utf8", (err, data) => {
-        if (err) {
-            throw err;
-        }
-        const parts = [];
-        let yearEndpoints = "";
-        for (let year in index) {
-            const pageUrl = baseUrl + "v" + apiVersion + "/" + year + "/";
-            parts.push({
-                "@type":"Dataset",
-                "url": pageUrl,
-            });
-            yearEndpoints += `<li><strong>${year}</strong><br/>` +
-                `<a href="${pageUrl}">View Page</a><br/>` +
-                `<small>Dataset of all opinion polling done for the ${year} election</small></li>`;
-        }
-        const variables = {
-            "dateModified": dateModified,
-            "parts": JSON.stringify(parts, null, 2),
-            "yearEndpoint": yearEndpoints,
-            "currentYear": currentDate.getFullYear()
-        }
-        writeToFile(outputDir, "index.html", htmlPreprocessor(data, variables));
-    });
-    // Create year landing pages
-    fs.readFile(websiteDir + "year-index.html", "utf8", (err, data) => {
-        if (err) {
-            throw err;
-        }
-        for (let year in index) {
-            const distributions = [];
-            let endpoints = "";
-            const yearElement = index[year];
-            for (let period in yearElement) {
-                if (period !== "range") {
-                    const periodElement = yearElement[period];
-                    const from = (new Date(periodElement["range"][0])).toISOString().split('T')[0];
-                    const to = (new Date(periodElement["range"][1])).toISOString().split('T')[0];
-                    distributions.push({
-                        "@type":"DataDownload",
-                        "encodingFormat":"JSON",
-                        "contentUrl": periodElement["url"],
-                        "name": year + " - " + periodElement["name"],
-                        "dateModified": dateModified,
-                        "temporalCoverage": from + "/" + to
-                    });
-                    endpoints += `<li><strong><code>/v${apiVersion}/${year}/${period}.json</code></strong><br/>` +
-                        `<a href="${periodElement["url"]}" target="_blank">View JSON</a><br/>` +
-                        `<small>Get opinion polling data between ${from} and ${to}</small></li>`;
-                }
-            }
-            const from = new Date(yearElement["range"][0]).toISOString().split('T')[0];
-            const to = new Date(yearElement["range"][1]).toISOString().split('T')[0];
-            const keywords = `"${year}"`;
-            const variables = {
-                "dateModified": dateModified,
-                "year": year,
-                "keywords": keywords,
-                "currentYear": currentDate.getFullYear(),
-                "distributions": JSON.stringify(distributions, null, 2),
-                "endpoints": endpoints,
-                "temporalCoverage": from + "/" + to
-            }
-            writeToFile(directory + year + "/", "index.html", htmlPreprocessor(data, variables));
-        }
-    });
 }
 
 function identifyUntaggedPollsters(directory, pollsterIndex, knownUntaggedPollsters) {
@@ -196,7 +116,9 @@ const index = async () => {
         // Context passed to the resolvers
         const context = {
             baseUrl,
+            outputDir,
             mainDirectory,
+            websiteDir,
             apiDir,
             apiVersion,
             apiIndex,
@@ -217,31 +139,16 @@ const index = async () => {
                 await resolver.resolve(sources);
             }
         }
-
-        // Index
         applyRangesToIndex(index);
+
+        // Write data to api
         writeJsonToFile(mainDirectory, "index", index, true);
-
-        // Citations
         writeJsonToFile(mainDirectory, "citations", citations, true);
-
-        // Parties
         writeJsonToFile(mainDirectory, "parties", parties, true);
-
-        // Pollsters
         writeJsonToFile(mainDirectory, "pollsters", pollsters, true);
 
-        // Add CNAME
-        writeToFile(outputDir, "CNAME", "api.pollsteraudit.ca", true);
-
-        // Add api landing page - index.html
-        createLandingPages(mainDirectory, index);
-
-        // Add stylesheet used by api pages
-        copyFile(websiteDir + "style.css", outputDir + "style.css");
-
-        // Add empty robots.txt
-        writeToFile(outputDir, "robots.txt", "", true);
+        // Setup webpages
+        setupWebpages(context);
 
         const untaggedPollstersPath = apiDataDir + "v" + apiVersion + "/untagged-pollsters.json";
         identifyUntaggedPollsters(

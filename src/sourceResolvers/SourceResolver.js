@@ -119,7 +119,7 @@ export class SourceResolver {
      * Calls the callback for each chunk found within the source. <br>
      * Chunk returned can be null, as long as it's handled in {@link #}
      */
-    forEachChunk(source, chunkCallback) {
+    async forEachChunk(source, chunkCallback) {
         throw new Error("Method 'forEachChunk()' is missing its implementation for class: " + this.constructor.name);
     }
 
@@ -164,7 +164,7 @@ export class SourceResolver {
             });
 
             await this.forEachChunk(source, async chunk => {
-                await this.processChunkIntoSections(source, key, chunk, async (section) => {
+                await this.processChunkIntoSections(source, key, chunk, async section => {
                     await this.processSection(response, source, key, section, innerCitations);
                 });
             });
