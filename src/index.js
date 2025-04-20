@@ -12,6 +12,7 @@ const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
 const apiVersion = 1;
 const outputDir = "./output/";
 const apiDir = "./api/";
+const apiDataDir = apiDir + "_data/";
 const baseUrl = "https://api.pollsteraudit.ca/";
 
 async function getWikipediaPage(url) {
@@ -711,7 +712,7 @@ const index = async () => {
             }
         });
 
-        const untaggedPollstersPath = apiDir + "v" + apiVersion + "/untagged-pollsters.json";
+        const untaggedPollstersPath = apiDataDir + "v" + apiVersion + "/untagged-pollsters.json";
         identifyUntaggedPollsters(
             pollsterIndex,
             hasApiDir && fs.existsSync(untaggedPollstersPath) ? getJsonFile(untaggedPollstersPath) : null
