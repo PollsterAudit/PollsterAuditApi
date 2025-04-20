@@ -3,7 +3,9 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const fs = require('node:fs');
 
-const config = require('../config.json');
+const parties = require('../config/parties.json')["parties"];
+const pollsters = require('../config/pollsters.json')["pollsters"];
+const sources = require('../config/sources.json')["sources"];
 
 const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
 
@@ -115,7 +117,7 @@ function normalizePollingFirmName(name) {
     return name.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 }
 
-function processTable($, table, headings, citations, pollsters, ignoreColumns) {
+function processTable($, table, headings, citations, pollsterIndex, ignoreColumns) {
     const idToUrlMap = {};
     const citationMap = {};
     const directCitationMap = {};
@@ -220,8 +222,8 @@ function processTable($, table, headings, citations, pollsters, ignoreColumns) {
                 const cleanFirmName = cleanPollingFirmName(pollingFirm);
                 item[j] = cleanFirmName;
                 const normalizedFirmName = normalizePollingFirmName(cleanFirmName);
-                if (!pollsters.includes(normalizedFirmName)) {
-                    pollsters.push(normalizedFirmName);
+                if (!pollsterIndex.includes(normalizedFirmName)) {
+                    pollsterIndex.push(normalizedFirmName);
                 }
             } else if (heading === "Date") {
                 const date = row["" + x];
@@ -263,7 +265,7 @@ function htmlPreprocessor(html, variables) {
 }
 
 async function getWikipediaSection(page, year, sectionId, sectionName, options,
-                                   manualTimes, index, citations, pollsters) {
+                                   manualTimes, index, citations, pollsterIndex) {
     try {
         options["forceIndexAsNumber"] = true;
         options["stripHtmlFromCells"] = false; // False so that we can extract url's from sources/citations
@@ -276,7 +278,7 @@ async function getWikipediaSection(page, year, sectionId, sectionName, options,
             table,
             headings,
             citations,
-            pollsters,
+            pollsterIndex,
             ("ignoreColumns" in options ? options.ignoreColumns : [])
         );
         if (processedTable.length === 0) {
@@ -413,23 +415,23 @@ async function writeCitations(citations) {
     });
 }
 
-async function writeFromConfig(key) {
+async function writeConfigToFile(key, data) {
     console.log("Writing " + key);
     const fileName = key + '.json';
     const directory = outputDir + "v" + apiVersion + "/";
 
-    const data = JSON.stringify(config[key]);
+    const strData = JSON.stringify(data);
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory, { recursive: true });
     }
-    fs.writeFile(directory + fileName, data, err => {
+    fs.writeFile(directory + fileName, strData, err => {
         if (err) {
             console.error(err);
         }
     });
 }
 
-async function processWikipediaSource(page, year, source, chunkSource, index, citations, pollsters) {
+async function processWikipediaSource(page, year, source, chunkSource, index, citations, pollsterIndex) {
     const sectionTables = chunkSource != null && "sectionTables" in chunkSource ?
         chunkSource["sectionTables"] : source["sectionTables"];
     const options = chunkSource != null && "options" in chunkSource ?
@@ -440,11 +442,12 @@ async function processWikipediaSource(page, year, source, chunkSource, index, ci
     if (!Array.isArray(sectionTables)) {
         for (let sectionId in sectionTables) {
             await getWikipediaSection(page, year, sectionId, sectionTables[sectionId], options, manualTimes,
-                index, citations, pollsters);
+                index, citations, pollsterIndex);
         }
     } else {
         for (const section of sectionTables) {
-            await getWikipediaSection(page, year, section, section, options, manualTimes, index, citations, pollsters);
+            await getWikipediaSection(page, year, section, section, options, manualTimes, index,
+                citations, pollsterIndex);
         }
     }
 }
@@ -551,10 +554,10 @@ function createLandingPages(index) {
     });
 }
 
-function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPollsters) {
+function identifyUntaggedPollsters(pollsterIndex, knownUntaggedPollsters) {
     const knownPollsters = ["voting results", "market opinion research"];
     // Populate known pollsters
-    for (let pollster of configPollsters) {
+    for (let pollster of pollsters) {
         knownPollsters.push(normalizePollingFirmName(pollster.name));
         if ("alternatives" in pollster) {
             for (let alternative of pollster["alternatives"]) {
@@ -568,7 +571,7 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
     const newUntaggedList = [];
     const newUntaggedPollsters = [];
     // Check which pollsters are untagged
-    for (let pollster of pollsters) {
+    for (let pollster of pollsterIndex) {
         if (!knownPollsters.includes(pollster)) {
             // Add pollster
             newUntaggedList.push(pollster);
@@ -595,7 +598,7 @@ function identifyUntaggedPollsters(pollsters, configPollsters, knownUntaggedPoll
                 {
                     "title": "New Pollster" + (newUntaggedPollsters.length > 1 ? "s" : ""),
                     "color": 14022436,
-                    "description": description,
+                    "description": description
                 }
             ]
         };
@@ -631,10 +634,9 @@ const index = async () => {
     console.log("Start indexing");
     try {
         const hasApiDir = fs.existsSync(apiDir)
-        const sources = config["sources"];
         const index = {};
         const citations = {};
-        const pollsters = [];
+        const pollsterIndex = [];
 
         const apiIndex = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/index.json") : null;
         const apiCitations = hasApiDir ? getJsonFile(apiDir + "v" + apiVersion + "/citations.json") : null;
@@ -665,10 +667,10 @@ const index = async () => {
             const page = await getWikipediaPage(url);
             if ("chunks" in source) {
                 for (const chunk of source["chunks"]) {
-                    await processWikipediaSource(page, year, source, chunk, index, innerCitations, pollsters);
+                    await processWikipediaSource(page, year, source, chunk, index, innerCitations, pollsterIndex);
                 }
             } else {
-                await processWikipediaSource(page, year, source, null, index, innerCitations, pollsters);
+                await processWikipediaSource(page, year, source, null, index, innerCitations, pollsterIndex);
             }
         }
 
@@ -679,10 +681,10 @@ const index = async () => {
         await writeCitations(citations);
 
         // Parties
-        await writeFromConfig("parties");
+        await writeConfigToFile("parties", parties);
 
         // Pollsters
-        await writeFromConfig("pollsters");
+        await writeConfigToFile("pollsters", pollsters);
 
         // Check if output exists
         if (!fs.existsSync(outputDir)) {
@@ -711,8 +713,7 @@ const index = async () => {
 
         const untaggedPollstersPath = apiDir + "v" + apiVersion + "/untagged-pollsters.json";
         identifyUntaggedPollsters(
-            pollsters,
-            config["pollsters"],
+            pollsterIndex,
             hasApiDir && fs.existsSync(untaggedPollstersPath) ? getJsonFile(untaggedPollstersPath) : null
         );
     } catch (error) {

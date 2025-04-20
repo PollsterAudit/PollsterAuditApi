@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Pollster Schema",
+  "description": "The config schema for pollsters",
+  "type": "object",
+  "required": [
+    "pollsters"
+  ],
+  "properties": {
+    "pollsters": {
+      "description": "The pollsters that show up within the data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "active",
+          "canadian",
+          "cric",
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "description": "The most commonly used name for this pollster",
+            "type": "string"
+          },
+          "active": {
+            "description": "If the pollster is still active",
+            "type": "boolean"
+          },
+          "canadian": {
+            "description": "If the pollster is canadian",
+            "type": "boolean"
+          },
+          "cric": {
+            "description": "If the pollster is a member of CRIC (https://www.canadianresearchinsightscouncil.ca/member-directory/)",
+            "type": "boolean"
+          },
+          "website": {
+            "description": "The pollsters website. Don't include if the pollster doesn't have a website.",
+            "type": "string",
+            "format": "uri"
+          },
+          "wikipedia": {
+            "description": "The pollsters wikipedia page. Don't include if the pollster doesn't have a wikipedia page.",
+            "type": "string",
+            "format": "uri"
+          },
+          "alternatives": {
+            "description": "Other names which might be used within the data.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "possibleBias": {
+            "description": "List of possible biases which might impact this pollsters results",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "citation",
+                "description"
+              ],
+              "dependencies": {
+                "party": [
+                  "relation"
+                ],
+                "relation": [
+                  "party"
+                ]
+              },
+              "properties": {
+                "citation": {
+                  "description": "Link to the citation",
+                  "type": "string",
+                  "format": "uri"
+                },
+                "description": {
+                  "description": "Describe why this citation is a bias",
+                  "type": "string"
+                },
+                "party": {
+                  "description": "Set if this is a bias against a specific party",
+                  "type": "string"
+                },
+                "relation": {
+                  "description": "Specifies how this pollster would be biased towards the party",
+                  "type": "string",
+                  "enum": [
+                    "positive",
+                    "negative"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

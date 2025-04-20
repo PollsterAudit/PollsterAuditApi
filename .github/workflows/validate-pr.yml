@@ -21,4 +21,4 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - name: Validate config
-        run: node src/validateConfig.js
+        run: node src/validateConfigs.js

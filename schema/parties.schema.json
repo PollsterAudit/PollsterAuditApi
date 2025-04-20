@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Parties Schema",
+  "description": "The config schema for parties",
+  "type": "object",
+  "required": [
+    "parties"
+  ],
+  "properties": {
+    "parties": {
+      "description": "The parties that show up within the data",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "abbreviations",
+          "color",
+          "founded"
+        ],
+        "properties": {
+          "name": {
+            "description": "The party's name",
+            "type": "string"
+          },
+          "abbreviations": {
+            "description": "1-2 abbreviations for this party. The second abbreviation should be the french variant",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true,
+            "maxItems": 2
+          },
+          "founded": {
+            "description": "The date the party was founded using the format YYYY-MM-DD",
+            "type": "string",
+            "format": "date"
+          },
+          "dissolved": {
+            "description": "The date the party was dissolved using the format YYYY-MM-DD. Don't include if the party is still active.",
+            "type": "string",
+            "format": "date"
+          },
+          "ideology": {
+            "description": "The ideologies of this party",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          },
+          "position": {
+            "description": "The political position of this party",
+            "type": "string"
+          },
+          "color": {
+            "description": "The official color of the party",
+            "type": "string",
+            "pattern": "#([0-9A-F]{3}){1,2}"
+          },
+          "graphColor": {
+            "description": "A color used to represent the party on a graph. These colors are usually easier on the eyes",
+            "type": "string",
+            "pattern": "#([0-9A-F]{3}){1,2}"
+          },
+          "website": {
+            "description": "A link to the parties website",
+            "type": "string",
+            "format": "uri"
+          },
+          "wikipedia": {
+            "description": "A link to the parties wikipedia page",
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    }
+  }
+}
