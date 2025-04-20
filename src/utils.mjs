@@ -48,7 +48,6 @@ function getJsonFile(path) {
 //endregion
 
 //region Structure creations
-//region Citations
 function createCitation(url, date, sourceExt = null) {
     const citation = {
         "url": url,
@@ -59,24 +58,6 @@ function createCitation(url, date, sourceExt = null) {
     }
     return citation;
 }
-
-function setupCitations(citations, year, source, sourceUrl) {
-    let innerCitations = citations;
-    if (!(year in innerCitations)) {
-        innerCitations[year] = {};
-    }
-    innerCitations = innerCitations[year];
-    if (!(source in innerCitations)) {
-        innerCitations[source] = {};
-    }
-    innerCitations = innerCitations[source];
-    if (!(sourceUrl in innerCitations)) {
-        innerCitations[sourceUrl] = {};
-    }
-    innerCitations[sourceUrl] = [];
-    return innerCitations[sourceUrl];
-}
-//endregion
 //endregion
 
 //region Cleaning
@@ -103,5 +84,5 @@ function normalizePollingFirmName(name) {
 }
 //endregion
 
-export { loadJson, writeJsonToFile, writeToFile, copyFile, getJsonFile, createCitation, setupCitations,
+export { loadJson, writeJsonToFile, writeToFile, copyFile, getJsonFile, createCitation,
     parseCleanFloat, cleanPollingFirmName, normalizePollingFirmName };
