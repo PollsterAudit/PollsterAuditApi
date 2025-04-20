@@ -12,6 +12,7 @@ const pollsters = loadJson('../config/pollsters.json')["pollsters"];
 const sources = loadJson('../config/sources.json')["sources"];
 
 const apiVersion = 1;
+const websiteDir = "./website/";
 const outputDir = "./output/";
 const apiDir = "./api/";
 const apiDataDir = apiDir + "_data/";
@@ -378,7 +379,7 @@ function createLandingPages(directory, index) {
     const currentDate = new Date();
     const dateModified = currentDate.toISOString().split('T')[0];
     // Create Main landing page
-    fs.readFile("./src/website/index.html", "utf8", (err, data) => {
+    fs.readFile(websiteDir + "index.html", "utf8", (err, data) => {
         if (err) {
             throw err;
         }
@@ -403,7 +404,7 @@ function createLandingPages(directory, index) {
         writeToFile(outputDir, "index.html", htmlPreprocessor(data, variables));
     });
     // Create year landing pages
-    fs.readFile("./src/website/year-index.html", "utf8", (err, data) => {
+    fs.readFile(websiteDir + "year-index.html", "utf8", (err, data) => {
         if (err) {
             throw err;
         }
@@ -569,7 +570,7 @@ const index = async () => {
         createLandingPages(mainDirectory, index);
 
         // Add stylesheet used by api pages
-        copyFile("./src/website/style.css", outputDir + "style.css");
+        copyFile(websiteDir + "style.css", outputDir + "style.css");
 
         // Add empty robots.txt
         writeToFile(outputDir, "robots.txt", "", true);
