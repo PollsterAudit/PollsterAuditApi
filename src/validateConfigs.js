@@ -1,12 +1,13 @@
-const Ajv = require("ajv");
-const addFormats = require("ajv-formats");
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
+import { loadJson } from "./utils.mjs";
 
 const ajv = new Ajv({allErrors: true});
 addFormats(ajv);
 
 function validateConfigs(configId) {
-    const schema = require(`../schema/${configId}.schema.json`);
-    const config = require(`../config/${configId}.json`);
+    const schema = loadJson(`../schema/${configId}.schema.json`);
+    const config = loadJson(`../config/${configId}.json`);
     const validate = ajv.compile(schema);
     const valid = validate(config)
     if (!valid) {
