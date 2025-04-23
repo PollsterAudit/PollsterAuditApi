@@ -50,6 +50,12 @@ export function identifyUntaggedPollsters(context, pollsters, hasApiDir) {
                 }
             ]
         };
+        if (!newPollsterDiscordWebhook) {
+            console.error("Unable to post untagged pollsters to discord webhook. Webhook isn't set!");
+            console.log("New Pollster" + (newUntaggedPollsters.length > 1 ? "s" : "") + ":");
+            console.log(description);
+            return;
+        }
         axios.post(newPollsterDiscordWebhook, params, {
             headers: {
                 'Content-Type': 'application/json'
