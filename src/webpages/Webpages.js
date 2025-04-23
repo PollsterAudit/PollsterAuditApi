@@ -24,6 +24,31 @@ function createLandingPages(context) {
             const pageUrl = context.baseUrl + "v" + context.apiVersion + "/" + year + "/";
             parts.push({
                 "@type":"Dataset",
+                "name": `Electoral Opinion Polling in ${year}`,
+                "alternateName": `Vote Intention Dataset in ${year}`,
+                "description": `Canadian Election Opinion Polling Dataset for the ${year} election year.`,
+                "license": "https://github.com/PollsterAudit/PollsterAuditApi/blob/master/LICENSE",
+                "spatialCoverage": "Canada",
+                "countryOfOrigin": {
+                    "@type": "Country",
+                    "name": "Canada"
+                },
+                "isAccessibleForFree" : true,
+                "isFamilyFriendly": true,
+                "creator": {
+                    "@type":"Organization",
+                    "url": "https://pollsteraudit.ca/",
+                    "name":"Pollster Audit",
+                    "alternateName": "Pollster Audit API",
+                    "contactPoint":{
+                        "@type":"ContactPoint",
+                        "email":"contact@pollsteraudit.ca"
+                    },
+                    "logo": {
+                        "@type": "ImageObject",
+                        "url": "https://pollsteraudit.ca/assets/favicon/PollsterAudit_Logo.png"
+                    }
+                },
                 "url": pageUrl,
             });
             yearEndpoints += `<li><strong>${year}</strong><br/>` +
