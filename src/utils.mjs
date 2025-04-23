@@ -74,8 +74,8 @@ function cleanPollingFirmName(item) {
     if (item == null) {
         return null;
     }
-    // Removes citations - E.x. Ekos[3]
-    const regex = /(.*?)(?:\[[a-zA-Z0-9]{0,2}\])?/gm;
+    // Removes citations & Brackets - E.x. Ekos[3] -> Ekos | YouGov (MRP) -> YouGov
+    const regex = /(.*?)(?:\[[a-zA-Z0-9]{0,2}\])?(?: ?\(.*?\))?/gm;
     return item.replace(regex, `$1`);
 }
 
