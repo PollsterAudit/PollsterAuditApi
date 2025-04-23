@@ -42,8 +42,8 @@ function copyFile(from, to) {
     });
 }
 
-function getJsonFile(path) {
-    return fs.existsSync(path) ? JSON.parse(fs.readFileSync(path)) : null;
+function getJsonFile(path, def = null) {
+    return fs.existsSync(path) ? JSON.parse(fs.readFileSync(path)) : def;
 }
 //endregion
 

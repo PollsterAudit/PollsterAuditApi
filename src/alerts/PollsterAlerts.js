@@ -5,7 +5,7 @@ const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
 
 export function identifyUntaggedPollsters(context, pollsters, hasApiDir) {
     const knownUntaggedPollsters = hasApiDir ?
-        getJsonFile(context.apiDir + "_data/v" + context.apiVersion + "/untagged-pollsters.json") : []
+        getJsonFile(context.apiDir + "_data/v" + context.apiVersion + "/untagged-pollsters.json", []) : []
     const knownPollsters = ["voting results", "market opinion research"];
     // Populate known pollsters
     for (let pollster of pollsters) {
