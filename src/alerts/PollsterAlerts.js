@@ -59,6 +59,6 @@ export function identifyUntaggedPollsters(context, pollsters, hasApiDir) {
         });
     }
     if (newUntaggedList.length > 0) {
-        writeJsonToFile(context.mainDirectory, "untagged-pollsters", newUntaggedList);
+        writeJsonToFile(context.mainDirectory + "_data/v" + context.apiVersion + "/", "untagged-pollsters", newUntaggedList);
     }
 }
