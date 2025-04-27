@@ -50,7 +50,7 @@ export class SourceResolver {
         if (key in this.context.apiIndex) {
             const fromDir = this.context.apiDir + "v" + this.context.apiVersion + "/" + key;
             const toDir = this.context.mainDirectory + key;
-            return this.copyDirectoryFromLastDeploy(fromDir, toDir);
+            return this.copyDirectoryFromLastDeploy(key, fromDir, toDir);
         }
         return false;
     }
