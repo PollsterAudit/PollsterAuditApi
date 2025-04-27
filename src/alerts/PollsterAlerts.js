@@ -5,7 +5,7 @@ const newPollsterDiscordWebhook = process.env.NEW_POLLSTER_DISCORD_WEBHOOK;
 
 export function identifyUntaggedPollsters(context, pollsters, hasApiDir) {
     const knownUntaggedPollsters = hasApiDir ?
-        getJsonFile(context.apiDir + "_data/v" + context.apiVersion + "/untagged-pollsters.json", []) : []
+        getJsonFile(context.apiDir + "v" + context.apiVersion + "/_data/untagged-pollsters.json", []) : []
     const knownPollsters = ["voting results", "market opinion research"];
     // Populate known pollsters
     for (let pollster of pollsters) {
@@ -54,17 +54,17 @@ export function identifyUntaggedPollsters(context, pollsters, hasApiDir) {
             console.error("Unable to post untagged pollsters to discord webhook. Webhook isn't set!");
             console.log("New Pollster" + (newUntaggedPollsters.length > 1 ? "s" : "") + ":");
             console.log(description);
-            return;
+        } else {
+            axios.post(newPollsterDiscordWebhook, params, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).catch(function (error) {
+                throw error;
+            });
         }
-        axios.post(newPollsterDiscordWebhook, params, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).catch(function (error) {
-            throw error;
-        });
     }
     if (newUntaggedList.length > 0) {
-        writeJsonToFile(context.mainDirectory + "_data/v" + context.apiVersion + "/", "untagged-pollsters", newUntaggedList);
+        writeJsonToFile(context.mainDirectory + "_data/", "untagged-pollsters", newUntaggedList);
     }
 }
