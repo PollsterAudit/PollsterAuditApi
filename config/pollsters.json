@@ -35,6 +35,13 @@
       "cric": false
     },
     {
+      "name": "Cardinal Research",
+      "active": true,
+      "canadian": true,
+      "cric": false,
+      "website": "https://cardinalresearch.ca/"
+    },
+    {
       "name": "Carleton",
       "active": true,
       "canadian": true,
