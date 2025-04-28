@@ -223,6 +223,13 @@
       "wikipedia": "https://en.wikipedia.org/wiki/Environics"
     },
     {
+      "name": "Focaldata",
+      "active": true,
+      "canadian": false,
+      "cric": false,
+      "website": "https://www.focaldata.com/"
+    },
+    {
       "name": "Forum Research",
       "active": true,
       "canadian": true,
