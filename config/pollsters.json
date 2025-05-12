@@ -275,6 +275,13 @@
       "wikipedia": "https://en.wikipedia.org/wiki/Ipsos"
     },
     {
+      "name": "Kolosowski Strategies",
+      "active": true,
+      "canadian": true,
+      "cric": false,
+      "website": "https://www.kolosowski.ca/"
+    },
+    {
       "name": "Leger",
       "active": true,
       "canadian": true,
