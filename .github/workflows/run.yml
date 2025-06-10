@@ -71,6 +71,7 @@ jobs:
 
           echo "only_date_modified=$only_date_modified" >> $GITHUB_OUTPUT
           rm -rf .git
+          rm -f changed_files.txt
 
       - name: Push API changes
         if: steps.check_date_modified.outputs.only_date_modified != 'true'
