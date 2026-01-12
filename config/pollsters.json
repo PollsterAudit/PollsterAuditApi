@@ -177,6 +177,13 @@
       "website": "https://web.archive.org/web/20210107235205/https://www.delphipolling.com/"
     },
     {
+      "name": "Deltapoll",
+      "active": true,
+      "canadian": false,
+      "cric": false,
+      "website": "https://deltapoll.co.uk/"
+    },
+    {
       "name": "Earnscliffe",
       "active": true,
       "canadian": true,
@@ -210,6 +217,13 @@
           "description": "In April 2022, in a now-deleted post on Twitter, Graves called Conservative leader Pierre Poilievre an \"authoritarian populist\" and said he would \"make sure you are never going to lead my country. I don't make idle threats\""
         }
       ]
+    },
+    {
+      "name": "Empirical Intelligence",
+      "active": true,
+      "canadian": true,
+      "cric": false,
+      "website": "https://empiricalintel.com/"
     },
     {
       "name": "Environics",
@@ -273,6 +287,13 @@
       ],
       "website": "https://www.ipsos.com/",
       "wikipedia": "https://en.wikipedia.org/wiki/Ipsos"
+    },
+    {
+      "name": "JL Partners",
+      "active": true,
+      "canadian": false,
+      "cric": false,
+      "website": "https://jlpartners.com/"
     },
     {
       "name": "Kolosowski Strategies",
