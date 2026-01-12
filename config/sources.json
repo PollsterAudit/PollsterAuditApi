@@ -2,6 +2,30 @@
   "sources": {
     "wikipedia": [
       {
+        "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_46th_Canadian_federal_election",
+        "year": 2026,
+        "sectionTables": [
+          "Pre-campaign period"
+        ],
+        "options": {
+          "headings": [
+            "PollingFirm",
+            "Date",
+            "Citation",
+            "LPC",
+            "CPC",
+            "BQ",
+            "NDP",
+            "GPC",
+            "PPC",
+            "Others",
+            "MarginOfError",
+            "SampleSize",
+            "PollingMethod"
+          ]
+        }
+      },
+      {
         "url": "https://en.wikipedia.org/wiki/Opinion_polling_for_the_2025_Canadian_federal_election",
         "year": 2025,
         "sectionTables": [
