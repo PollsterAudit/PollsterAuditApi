@@ -165,7 +165,10 @@ export class SourceResolver {
             const innerCitations = this.setupCitations(key, url);
             const response = await axios({
                 method: "GET",
-                url: url
+                url: url,
+                headers: {
+                    "User-Agent": "PollsterAuditBot/1.0",
+                }
             });
 
             await this.forEachChunk(source, async chunk => {
