@@ -482,7 +482,10 @@
       "active": true,
       "canadian": true,
       "cric": false,
-      "website": "https://sparkadvocacy.ca/"
+      "website": "https://sparkadvocacy.ca/",
+      "alternatives": [
+        "spark insights"
+      ]
     },
     {
       "name": "Stratcom",
