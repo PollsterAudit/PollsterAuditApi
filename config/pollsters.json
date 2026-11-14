@@ -459,7 +459,10 @@
       "active": true,
       "canadian": true,
       "cric": false,
-      "website": "https://researchco.ca/"
+      "website": "https://researchco.ca/",
+      "alternatives": [
+        "research co"
+      ]
     },
     {
       "name": "Segma",
